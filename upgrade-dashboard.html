@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Epic Upgrade Dashboard</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page:#f9f9f7; --surface-1:#fcfcfb; --surface-2:#f3f2ef;
+    --text-1:#0b0b0b; --text-2:#52514e; --muted:#898781;
+    --grid:#e1e0d9; --baseline:#c3c2b7; --border:rgba(11,11,11,0.10); --shadow:rgba(11,11,11,0.06);
+    --accent:#2a78d6; --accent-soft:#cde2fb;
+    --good:#0ca30c; --good-soft:#d9f2d9; --warning:#eda100; --warning-soft:#fbeecb;
+    --serious:#eb6834; --serious-soft:#fbe0d4; --critical:#d03b3b; --critical-soft:#f7dada;
+    --neutral:#898781; --neutral-soft:#ecebe6;
+    --up-1:#2a78d6; --up-2:#008300; --up-3:#e87ba4; --up-4:#eda100;
+    --up-5:#1baf7a; --up-6:#eb6834; --up-7:#4a3aa7; --up-8:#e34948;
+    --acc-1:#1f66bd; --acc-2:#0a730f; --acc-3:#bd3568; --acc-4:#8a6a00; --acc-5:#10704f; --acc-6:#b04e1d; --acc-7:#4a3aa7; --acc-8:#c0392f;
+    --accs-1:#cde2fb; --accs-2:#d9f2d9; --accs-3:#fbe1ec; --accs-4:#fbeecb; --accs-5:#d6f2e7; --accs-6:#fbe0d4; --accs-7:#e6e2f9; --accs-8:#f7dada;
+  }
+  html[data-theme="dark"] {
+    color-scheme: dark;
+    --page:#0d0d0d; --surface-1:#1a1a19; --surface-2:#232322;
+    --text-1:#ffffff; --text-2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,0.10); --shadow:rgba(0,0,0,0.4);
+    --accent:#3987e5; --accent-soft:#16324f;
+    --good:#0ca30c; --good-soft:#123b17; --warning:#fab219; --warning-soft:#3d3413;
+    --serious:#ec835a; --serious-soft:#3d2418; --critical:#e66767; --critical-soft:#3d1c1c;
+    --neutral:#898781; --neutral-soft:#2c2c2a;
+    --up-1:#3987e5; --up-2:#008300; --up-3:#d55181; --up-4:#c98500;
+    --up-5:#199e70; --up-6:#d95926; --up-7:#9085e9; --up-8:#e66767;
+    --acc-1:#5598e7; --acc-2:#35b13a; --acc-3:#e0789f; --acc-4:#e0a83a; --acc-5:#35b98c; --acc-6:#ec8a5f; --acc-7:#a99ff0; --acc-8:#ef8a8a;
+    --accs-1:#16324f; --accs-2:#123b17; --accs-3:#3d1c2b; --accs-4:#3d3413; --accs-5:#12352a; --accs-6:#3d2418; --accs-7:#26214a; --accs-8:#3d1c1c;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--page); color: var(--text-1); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 20px 24px 80px; }
+
+  .topbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+  .brand { display: flex; flex-direction: column; gap: 2px; }
+  .brand .eyebrow { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .brand h1 { font-size: 24px; margin: 0; font-weight: 650; letter-spacing: -.01em; display: flex; align-items: center; gap: 9px; }
+  .brand .sub { font-size: 13px; color: var(--text-2); display:flex; align-items:center; gap:8px; }
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+  button { font-family: inherit; font-size: 13px; cursor: pointer; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-1); padding: 7px 12px; font-weight: 500; transition: background .12s, border-color .12s; display: inline-flex; align-items: center; gap: 6px; }
+  button:hover { background: var(--surface-2); }
+  button.primary { background: var(--accent); color: #fff; border-color: transparent; }
+  button.primary:hover { filter: brightness(1.06); background: var(--accent); }
+  button.ghost { background: transparent; }
+  button.danger { color: var(--critical); }
+  button.small { padding: 4px 9px; font-size: 12px; border-radius: 6px; }
+  button.icon { padding: 6px; width: 30px; height: 30px; justify-content: center; }
+
+  .grid-overview { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; margin-bottom: 16px; }
+  @media (max-width: 820px){ .grid-overview { grid-template-columns: 1fr; } }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px; padding: 18px; box-shadow: 0 1px 2px var(--shadow); }
+  .card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 14px; font-weight: 650; }
+
+  .ms-list { display: flex; flex-direction: column; }
+  .ms-row { display: grid; grid-template-columns: 98px 1fr auto; gap: 12px; align-items: baseline; padding: 8px 10px; border-bottom: 1px solid var(--grid); border-left: 3px solid transparent; }
+  .ms-row:last-child { border-bottom: none; }
+  .ms-row .ms-date { font-size: 12.5px; font-weight: 680; font-variant-numeric: tabular-nums; color: var(--text-2); white-space: nowrap; }
+  .ms-row .ms-label { font-size: 13.5px; color: var(--text-1); font-weight: 500; }
+  .ms-row .ms-rel { font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+  .ms-row.is-next { border-left-color: var(--accent); background: var(--surface-2); }
+  .ms-row.is-next .ms-date { color: var(--accent); }
+  .ms-row.is-next .ms-rel { color: var(--accent); font-weight: 600; }
+  .ms-row.is-past { opacity: .5; }
+  .ms-row.is-past .ms-label { text-decoration: line-through; text-decoration-color: var(--baseline); }
+  .ms-edit-block { border: 1px solid var(--border); border-radius: 8px; padding: 8px 9px; display: grid; gap: 6px; }
+  .ms-edit-dates { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .ms-edit-main { display: grid; grid-template-columns: 1fr 1fr 30px; gap: 6px; align-items: center; }
+  .ms-lbl { display: grid; gap: 3px; font-size: 10.5px; color: var(--muted); font-weight: 650; text-transform: uppercase; letter-spacing: .03em; }
+  .ms-lbl input { width: 100%; }
+
+  .progress-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+  .ring-tile { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+  .ring { position: relative; width: 78px; height: 78px; }
+  .ring svg { transform: rotate(-90deg); }
+  .ring .ring-num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 680; font-variant-numeric: tabular-nums; }
+  .ring-tile .rt-label { font-size: 12px; color: var(--text-2); font-weight: 550; }
+  .ring-tile .rt-frac { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .year-strip { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; }
+  .yr { flex: 1 1 0; min-width: 148px; border: 1px solid var(--border); border-left: 4px solid var(--up, var(--baseline)); border-radius: 10px; padding: 10px 12px; background: var(--surface-2); cursor: pointer; transition: border-color .12s, box-shadow .12s, background .12s; }
+  .yr:hover { border-color: var(--up, var(--accent)); border-left-color: var(--up, var(--accent)); }
+  .yr.current { background: color-mix(in srgb, var(--up, var(--accent)) 13%, var(--surface-1)); border-color: var(--up, var(--accent)); }
+  .yr.active { box-shadow: inset 0 0 0 2px var(--up, var(--accent)); border-color: var(--up, var(--accent)); }
+  .yr .yr-badges { display: flex; gap: 6px; align-items: center; min-height: 15px; margin-bottom: 1px; }
+  .yr .yr-name { font-size: 15px; font-weight: 650; margin: 2px 0; }
+  .yr .yr-date { font-size: 12px; color: var(--text-2); font-variant-numeric: tabular-nums; }
+  .badge-live { font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--up, var(--accent)); background: color-mix(in srgb, var(--up, var(--accent)) 14%, var(--surface-1)); border:1px solid var(--up, var(--accent)); padding: 0 6px; border-radius: 6px; }
+  .badge-view { font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  .up-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--up, var(--accent)); display: inline-block; flex-shrink: 0; }
+  .yr-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .yr-chip { font-size: 12px; font-weight: 600; padding: 3px 11px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-2); cursor: pointer; }
+  .yr-chip:hover { border-color: var(--accent); }
+  .yr-chip.on { background: var(--accent); color: #fff; border-color: transparent; }
+
+  section.block { margin-top: 22px; }
+  .block-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+  .block-head .bh-left { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .block-head h2 { font-size: 17px; margin: 0; font-weight: 640; letter-spacing: -.01em; }
+  .block-head .count { font-size: 12px; color: var(--muted); font-weight: 600; background: var(--surface-2); border: 1px solid var(--border); border-radius: 20px; padding: 2px 9px; }
+  .block-desc { font-size: 12.5px; color: var(--text-2); margin: -4px 0 10px; max-width: 70ch; }
+
+  .table-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; box-shadow: 0 1px 2px var(--shadow); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 650; padding: 10px 14px; border-bottom: 1px solid var(--border); background: var(--surface-2); white-space: nowrap; position: sticky; top: 0; }
+  tbody td { padding: 10px 14px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--surface-2); }
+  td.actions { white-space: nowrap; text-align: right; }
+  td .cell-main { font-weight: 550; }
+  td .cell-sub { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+  .mono { font-variant-numeric: tabular-nums; }
+  .empty { padding: 26px 14px; text-align: center; color: var(--muted); font-size: 13px; }
+  .filterbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  select, input[type="text"], input[type="date"], textarea { font-family: inherit; font-size: 13px; color: var(--text-1); background: var(--surface-1); border: 1px solid var(--border); border-radius: 7px; padding: 6px 9px; }
+  select.filter { padding: 5px 8px; }
+
+  .chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; padding: 2px 9px 2px 7px; border-radius: 20px; white-space: nowrap; }
+  .chip .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .chip.good { background: var(--good-soft); color: var(--good); } .chip.good .dot{ background: var(--good);}
+  .chip.warning { background: var(--warning-soft); color: var(--warning); } .chip.warning .dot{ background: var(--warning);}
+  .chip.serious { background: var(--serious-soft); color: var(--serious); } .chip.serious .dot{ background: var(--serious);}
+  .chip.critical { background: var(--critical-soft); color: var(--critical); } .chip.critical .dot{ background: var(--critical);}
+  .chip.neutral { background: var(--neutral-soft); color: var(--text-2); } .chip.neutral .dot{ background: var(--neutral);}
+  html[data-theme="dark"] .chip.warning { color: #fab219; }
+
+  .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-2); }
+  .envflow { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; }
+  .envflow .arrow { color: var(--muted); }
+
+  .nova-cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  @media (max-width: 900px){ .nova-cols { grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 520px){ .nova-cols { grid-template-columns: 1fr; } }
+  .nova-col { background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 1px 2px var(--shadow); overflow: hidden; display: flex; flex-direction: column; }
+  .nova-col-head { display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; border-bottom: 1px solid var(--border); background: var(--surface-2); }
+  .nova-col-head .ncn { font-weight: 680; font-size: 14px; }
+  .nova-col-body { padding: 6px; display: flex; flex-direction: column; gap: 2px; min-height: 40px; }
+  .nova-item { display: flex; gap: 6px; padding: 8px; border-radius: 8px; align-items: flex-start; }
+  .nova-item:hover { background: var(--surface-2); }
+  .nova-item .ni-main { flex: 1; font-size: 13px; line-height: 1.4; }
+  .nova-item .ni-num { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .nova-item.done .ni-main { opacity: .5; }
+  .nova-item.done .ni-main a, .nova-item.done .ni-main { text-decoration: line-through; text-decoration-color: var(--baseline); }
+  .nova-item .ni-actions { display: flex; gap: 1px; align-items: flex-start; flex-shrink: 0; }
+  .nova-item .ni-actions button { opacity: .55; }
+  .nova-item:hover .ni-actions button, .nova-item .ni-actions button:hover { opacity: 1; }
+  .nova-empty { padding: 16px; color: var(--muted); font-size: 12.5px; text-align: center; }
+  .ni-cm { display: inline-flex; align-items: center; gap: 4px; margin-top: 5px; font-size: 11px; font-weight: 700; letter-spacing: .02em; padding: 2px 8px; border-radius: 6px; background: var(--accent); color: #fff; }
+  .nova-item.has-cm { border-left: 3px solid var(--accent); background: var(--accent-soft); }
+  .nova-item.has-cm:hover { background: var(--accent-soft); }
+
+  .cm-list { display: flex; flex-direction: column; gap: 4px; }
+  .cm-row { display: flex; align-items: baseline; gap: 10px; padding: 6px 2px; border-bottom: 1px solid var(--grid); }
+  .cm-row:last-child { border-bottom: none; }
+  .cm-tk { font-weight: 700; font-size: 12px; font-variant-numeric: tabular-nums; background: var(--accent); color: #fff; padding: 2px 9px; border-radius: 6px; white-space: nowrap; }
+  .cm-for { font-size: 13px; color: var(--text-1); line-height: 1.4; }
+  .cm-for .cm-sub { color: var(--muted); }
+  .cm-list-empty { font-size: 12.5px; color: var(--muted); padding: 4px 2px; }
+
+  .links-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width: 820px){ .links-wrap { grid-template-columns: 1fr; } }
+  .links-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; box-shadow: 0 1px 2px var(--shadow); }
+  .links-card .lc-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; }
+  .links-card .lc-head h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 0; font-weight: 650; }
+  .link-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .link-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 550; padding: 5px 10px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-1); }
+  .link-chip:hover { border-color: var(--accent); text-decoration: none; }
+  .link-chip .lc-ic { color: var(--muted); font-size: 11px; }
+  .links-empty { font-size: 12px; color: var(--muted); }
+  .lk-edit-row { display: grid; grid-template-columns: 1fr 1.4fr 30px; gap: 8px; align-items: center; }
+  @media (max-width: 540px){ .lk-edit-row { grid-template-columns: 1fr 1fr 30px; } }
+
+  .cm-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; box-shadow: 0 1px 2px var(--shadow); margin-bottom: 14px; }
+  .cm-card .lc-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; }
+  .cm-card .lc-head h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 0; font-weight: 650; }
+  .cm-items { display: flex; flex-wrap: wrap; gap: 6px 20px; }
+  .cm-item { font-size: 13px; }
+  .cm-item .cm-l { color: var(--muted); font-weight: 600; }
+  .cm-item .cm-v { font-weight: 650; }
+  .cm-empty { font-size: 12px; color: var(--muted); }
+  .cm-hint { font-size: 11.5px; color: var(--muted); margin-top: 8px; }
+  .cm-skew { font-size: 13px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .cm-skew .cm-l { color: var(--muted); font-weight: 600; }
+  .cm-edit-row { display: grid; grid-template-columns: 1fr 1.4fr 30px; gap: 8px; align-items: center; }
+  @media (max-width: 540px){ .cm-edit-row { grid-template-columns: 1fr 1fr 30px; } }
+  .an-edit-row { display: grid; grid-template-columns: 1fr 30px; gap: 8px; align-items: center; }
+  .an-edit-row input { width: 100%; }
+
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.42); display: none; align-items: flex-start; justify-content: center; padding: 40px 16px; z-index: 50; overflow-y: auto; }
+  .overlay.open { display: flex; }
+  .modal { background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 540px; box-shadow: 0 20px 50px rgba(0,0,0,.3); }
+  .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+  .modal-head h3 { margin: 0; font-size: 16px; font-weight: 640; }
+  .modal-body { padding: 18px 20px; display: grid; gap: 14px; }
+  .modal-foot { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: 10px; }
+  .field { display: grid; gap: 5px; }
+  .field label { font-size: 12px; font-weight: 600; color: var(--text-2); }
+  .field input, .field select, .field textarea { width: 100%; }
+  .field textarea { resize: vertical; min-height: 54px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 520px){ .grid2 { grid-template-columns: 1fr; } }
+  .checkline { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .checkline input { width: auto; }
+
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text-1); color: var(--page); padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 500; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 80; display: flex; align-items: center; gap: 12px; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+  .toast button { background: transparent; border: none; color: #9ec5f4; font-weight: 600; padding: 0; }
+
+  .footer-note { margin-top: 34px; font-size: 12px; color: var(--muted); text-align: center; line-height: 1.6; }
+  .link-icon { font-size: 12px; }
+  .muted-inline { color: var(--muted); }
+  input[type="file"] { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand" id="brand">
+      <span class="eyebrow">Epic Upgrade</span>
+      <h1 id="upgradeName">—</h1>
+      <span class="sub" id="upgradeSub">—</span>
+    </div>
+    <div class="toolbar">
+      <button class="ghost" onclick="openAddUpgrade()">＋ New upgrade</button>
+      <button class="ghost" onclick="openUpgradeModal()">✎ Edit upgrade</button>
+      <button class="ghost" onclick="exportData()">↓ Export</button>
+      <button class="ghost" onclick="document.getElementById('importFile').click()">↑ Import</button>
+      <input type="file" id="importFile" accept="application/json" onchange="importData(event)">
+      <button class="icon ghost" id="themeBtn" title="Toggle theme" onclick="toggleTheme()">☾</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="block-head" style="margin-bottom:12px;">
+      <div class="bh-left"><h2 style="font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0;">Upgrades</h2></div>
+      <div class="yr-chips" id="yearChips"></div>
+    </div>
+    <div class="year-strip" id="yearStrip"></div>
+  </div>
+
+  <div class="grid-overview" style="margin-top:16px;">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <h2 style="margin:0;">Milestones — this upgrade</h2>
+        <button class="small ghost" onclick="openMilestonesModal()">✎ Edit</button>
+      </div>
+      <div class="ms-list" id="milestones"></div>
+    </div>
+    <div class="card">
+      <h2>Readiness</h2>
+      <div class="progress-row" id="progressRow"></div>
+    </div>
+  </div>
+
+  <section class="block">
+    <div class="block-head">
+      <div class="bh-left"><h2>Nova Notes</h2><span class="count" id="novaCount">0</span></div>
+      <div class="filterbar">
+        <button class="ghost small" onclick="openAnalystsModal()">✎ Analysts</button>
+        <button class="primary small" onclick="openNovaModal()">+ Add Nova Note</button>
+      </div>
+    </div>
+    <p class="block-desc">Assigned Nova Notes for this upgrade, by analyst — number and title, each linking to the note in Epic.</p>
+    <div class="cm-card">
+      <div class="lc-head"><h3>CM ticket instructions</h3><button class="icon small ghost" title="Edit CM instructions" onclick="openCmModal()">✎</button></div>
+      <div class="cm-skew" id="cmSkew"></div>
+      <div class="cm-items" id="cmItems"></div>
+      <div class="cm-hint">How to fill the CM ticket for this upgrade. Not every note has a CM ticket — add the ticket number on the ones that do.</div>
+    </div>
+    <div class="cm-card">
+      <div class="lc-head"><h3>CMs for this upgrade</h3><span class="count" id="cmCount">0</span></div>
+      <div class="cm-list" id="cmList"></div>
+    </div>
+    <div class="nova-cols" id="novaCols"></div>
+  </section>
+
+  <section class="block">
+    <div class="block-head">
+      <div class="bh-left"><h2>Testing</h2><span class="count" id="testCount">0</span></div>
+      <div class="filterbar">
+        <select class="filter" id="testFilter" onchange="renderTesting()">
+          <option value="">All statuses</option>
+          <option value="Not started">Not started</option>
+          <option value="In progress">In progress</option>
+          <option value="Passed">Passed</option>
+          <option value="Failed">Failed</option>
+          <option value="Blocked">Blocked</option>
+        </select>
+        <button class="primary small" onclick="openTestModal()">+ Add test item</button>
+      </div>
+    </div>
+    <p class="block-desc">Testing items from the hosting team — scripts and workflows to validate, who owns each, the environment it's tested in, and its result.</p>
+    <div class="links-wrap">
+      <div class="links-card">
+        <div class="lc-head"><h3>Standing resources</h3><button class="icon small ghost" title="Edit standing resources" onclick="openResourcesModal()">✎</button></div>
+        <div class="link-chips" id="resourceLinks"></div>
+      </div>
+      <div class="links-card">
+        <div class="lc-head"><h3>This upgrade's testing links</h3><button class="icon small ghost" title="Edit this upgrade's links" onclick="openTestLinksModal()">✎</button></div>
+        <div class="link-chips" id="upgradeLinks"></div>
+      </div>
+    </div>
+    <div class="table-card">
+      <table>
+        <thead><tr>
+          <th>Test item</th><th style="width:13%">Application</th><th style="width:9%">Env</th>
+          <th style="width:12%">Assigned to</th><th style="width:9%">Target</th><th style="width:10%">Completed</th>
+          <th style="width:11%">Status</th><th style="width:90px"></th>
+        </tr></thead>
+        <tbody id="testBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="block-head">
+      <div class="bh-left"><h2>Environment migrations</h2><span class="count" id="migCount">0</span></div>
+      <div class="filterbar">
+        <select class="filter" id="migFilter" onchange="renderMigrations()">
+          <option value="">All statuses</option>
+          <option value="Not started">Not started</option>
+          <option value="Ready">Ready</option>
+          <option value="Scheduled">Scheduled</option>
+          <option value="Moved">Moved</option>
+          <option value="Verified">Verified</option>
+          <option value="Blocked">Blocked</option>
+        </select>
+        <button class="primary small" onclick="openMigModal()">+ Add migration</button>
+      </div>
+    </div>
+    <p class="block-desc">Changes moving between environments — the change/record, source and destination, who moves it, the planned date, and any dependencies.</p>
+    <div class="table-card">
+      <table>
+        <thead><tr>
+          <th style="width:16%">Change / record</th><th>Description</th><th style="width:16%">Move</th>
+          <th style="width:12%">Owner</th><th style="width:11%">Date</th><th style="width:12%">Status</th><th style="width:90px"></th>
+        </tr></thead>
+        <tbody id="migBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="footer-note" id="footerNote"></p>
+</div>
+
+<div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"><span id="toastMsg"></span><button id="toastAction" style="display:none"></button></div>
+
+<script>
+const STORE_KEY = 'epicUpgradeDashboard.v4';
+const CST_ID = 978;
+const NOVA_URL = n => `https://nova.epic.com/Select?CstID=${CST_ID}&RnID=${n}`;
+const SP_APP  = "https://umassmemorial.sharepoint.com/sites/IS-Applications/_layouts/15/guestaccess.aspx?share=IgCScAHryyf2Ta8v25YpQ248AfgvgJD5b0P5qv-Yyinpbig&e=wj7PoK";
+const SP_INT  = "https://umassmemorial.sharepoint.com/sites/IS-Applications/_layouts/15/guestaccess.aspx?share=IgBgAeDwWzIxR5frVSjMCqmHAbr-Dj9qeIoqrtu3R5EhMEI&e=ZSMQZa";
+const SP_BPAM = "https://umassmemorial.sharepoint.com/sites/IS-Applications/_layouts/15/guestaccess.aspx?share=IgBgAeDwWzIxR5frVSjMCqmHAbr-Dj9qeIoqrtu3R5EhMEI&e=ZSMQZa";
+const N = (num, owner, title) => ({ id: 'nn'+num, number: String(num), title, link: NOVA_URL(num), owner, done: false });
+
+const STARTER = {
+  publishedAt: 0,
+  activeId: 'up-feb26',
+  analysts: ["Darcy", "David", "Kelsy", "Gui"],
+  upgrades: [{
+    id: 'up-feb26', version: "Feb'26", goLive: "2026-08-13", current: true, notes: "",
+    milestones: [
+      { date: "2026-06-15", label: "PJX, REL, POC environments upgrade", link: "" },
+      { date: "2026-06-19", label: "Nova Notes reviewed", link: "" },
+      { date: "2026-07-10", label: "Build deadline", link: "" },
+      { date: "2026-07-19", label: "TST environment upgrade", link: "" },
+      { date: "2026-07-20", label: "POC → TST build migration", link: "" },
+      { date: "2026-07-20", end: "2026-07-24", label: "Application testing / EUAT", link: SP_APP },
+      { date: "2026-07-27", end: "2026-07-31", label: "Integrated testing", link: SP_INT },
+      { date: "2026-07-27", label: "BPAM testing", link: SP_BPAM },
+      { date: "2026-08-11", label: "SUP environment upgrade", link: "" },
+      { date: "2026-08-13", label: "PRD environment upgrade / GO LIVE", link: "" }
+    ],
+    nova: [
+      N("918727","Darcy","More Easily Identify Provider Teams on Shift"),
+      N("904090","Darcy","Place Common Verbal and Per Protocol Orders Directly from the Narrator"),
+      N("920956","David","Enhanced Sorting and Other Options for Additional Columns in Mobile Patient Lists"),
+      N("914736","David","Consistent Authentication: OIDC Now Works in All Mobile Contexts"),
+      N("915549","David","Increase Efficiency Finding and Reviewing Clinical Images Using Combine Images and Grid Capture"),
+      N("915955","David","Improve Clinical Image Quality in Haiku, Canto, and Rover"),
+      N("915967","David","Patient Instructions SmartText Versioning and Retirement Updates"),
+      N("921146","David","Update Your Mobile Apps to Version 11.7 for February 2026"),
+      N("911679","Kelsy","Get Up to Speed in the ED with AI-Generated Note Summaries"),
+      N("916583","Kelsy","Demographics Activity Now Respects Security"),
+      N("897181","Kelsy","Patch Perfect: Remind Nurses to Verify Patch Medications Are Still Present"),
+      N("912354","Kelsy","Simpler ED Disposition Column Sorting in ED Tracking Tools"),
+      N("913131","Kelsy","Ready, Set, Right-Click: Marking Beds Ready in ED Manager"),
+      N("913766","Kelsy","New Security Points Required to Access Patient Tracking Activities"),
+      N("918956","Gui","Better Level of Service Range Calculation Validation for the Scoring System Editor"),
+      N("918949","Gui","Early Detection of Sepsis (Version 1) Predictive Model Retired in the United States"),
+      N("898370","Gui","Track Psychiatric Treatment History in One Place"),
+      N("900377","Gui","It's Time to Give Patients Estimated Wait Times"),
+      N("905122","Gui","You Belong with Me (Epic's Version): Track Patient Belongings in New Activity")
+    ],
+    testing: [], migrations: [],
+    testLinks: [
+      { label: "ASAP Testing Toolkit 8.13.26", url: "https://umassmemorial.sharepoint.com/sites/IS-Applications/_layouts/15/guestaccess.aspx?share=IQA40fF3D63zTKX27ccRgwahAfL06ZHFEaWKt0Pz8BmjyJ4&e=nMC9db" }
+    ],
+    cmInstructions: [
+      { label: "Priority", value: "Upgrade Phase 2 (Medium)" },
+      { label: "Reason", value: "Upgrade" },
+      { label: "Due in Production", value: "8/13/2026" }
+    ],
+    versionSkewTicket: ""
+  }],
+  testingResources: [
+    { label: "Testing library (all IS)", url: "https://umassmemorial.sharepoint.com/sites/IS-Applications/_layouts/15/guestaccess.aspx?share=IgBgAeDwWzIxR5frVSjMCqmHAbr-Dj9qeIoqrtu3R5EhMEI&e=ZSMQZa" },
+    { label: "Application Testing", url: "https://umassmemorial.sharepoint.com/sites/IS-Applications/_layouts/15/guestaccess.aspx?share=IgCScAHryyf2Ta8v25YpQ248AfgvgJD5b0P5qv-Yyinpbig&e=wj7PoK" },
+    { label: "ASAP Smoke Testing", url: "https://umassmemorial.sharepoint.com/sites/IS-Applications/SU%20Smoke%20Testing%20Scripts/Forms/AllItems.aspx" }
+  ]
+};
+
+let data = null, viewYear = null, dataSource = 'embedded', dirty = false;
+
+function normalize(d) {
+  if (!Array.isArray(d.upgrades)) d.upgrades = JSON.parse(JSON.stringify(STARTER.upgrades));
+  if (!Array.isArray(d.analysts)) d.analysts = [...STARTER.analysts];
+  if (!Array.isArray(d.testingResources)) d.testingResources = JSON.parse(JSON.stringify(STARTER.testingResources));
+  d.upgrades.forEach(u => {
+    if (!Array.isArray(u.testLinks)) u.testLinks = (u.id === 'up-feb26') ? JSON.parse(JSON.stringify(STARTER.upgrades[0].testLinks)) : [];
+    if (!Array.isArray(u.cmInstructions)) u.cmInstructions = (u.id === 'up-feb26') ? JSON.parse(JSON.stringify(STARTER.upgrades[0].cmInstructions)) : [];
+    if (u.versionSkewTicket == null) u.versionSkewTicket = '';
+  });
+  { const smokeUrl = "https://umassmemorial.sharepoint.com/sites/IS-Applications/SU%20Smoke%20Testing%20Scripts/Forms/AllItems.aspx";
+    const r = d.testingResources; const su = r.findIndex(x => /SU Smoke Testing/i.test(x.label||''));
+    if (su !== -1) { r[su] = { label: "ASAP Smoke Testing", url: smokeUrl }; for (let i=r.length-1;i>=0;i--) if (i!==su && /ASAP Smoke Testing/i.test(r[i].label||'')) r.splice(i,1); } }
+  if (!d.activeId || !d.upgrades.find(u => u.id === d.activeId)) d.activeId = (d.upgrades[0]||{}).id;
+  if (d.publishedAt == null) d.publishedAt = 0;
+  return d;
+}
+async function fetchPublished() {
+  try { const res = await fetch('data.json?t=' + Date.now(), { cache: 'no-store' }); if (res.ok) { const j = await res.json(); if (j && Array.isArray(j.upgrades)) return j; } } catch (e) {}
+  return null;
+}
+function readLocal() { try { const raw = localStorage.getItem(STORE_KEY); if (raw) { const p = JSON.parse(raw); if (p && Array.isArray(p.upgrades)) return p; } } catch (e) {} return null; }
+async function init() {
+  const published = await fetchPublished();
+  const local = readLocal();
+  const pv = published ? (published.publishedAt||0) : -1;
+  const lv = local ? (local.publishedAt||0) : -1;
+  if (published && (!local || pv > lv)) { data = published; dataSource = 'published'; }
+  else if (local) { data = local; dataSource = published ? 'draft' : 'local'; }
+  else { data = published || JSON.parse(JSON.stringify(STARTER)); dataSource = published ? 'published' : 'embedded'; }
+  normalize(data); dirty = false; renderAll();
+}
+function save() { dirty = true; try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); } catch (e) {} }
+function uid() { return 'id' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function A() { return data.upgrades.find(u => u.id === data.activeId) || data.upgrades[0] || null; }
+
+const UP_COUNT = 8;
+const HUE_ORDER = [3, 4, 2, 1, 5, 6, 7, 8];
+function effHue(u) {
+  if (!u) return 0;
+  const y = String(yearOf(u));
+  const sameYear = data.upgrades.filter(x => String(yearOf(x)) === y).slice().sort((a,b) => String(a.goLive||'').localeCompare(String(b.goLive||'')));
+  const idx = Math.max(0, sameYear.indexOf(u));
+  return ((idx % UP_COUNT) + UP_COUNT) % UP_COUNT;
+}
+function upVar(u) { const h = effHue(u); return `var(--up-${HUE_ORDER[h] || (h + 1)})`; }
+function applyAccent() {
+  const n = HUE_ORDER[effHue(A())] || 1;
+  const r = document.documentElement.style;
+  r.setProperty('--accent', `var(--acc-${n})`);
+  r.setProperty('--accent-soft', `var(--accs-${n})`);
+}
+
+function fmtDate(iso) { if (!iso) return "—"; const d = new Date(iso+"T00:00:00"); return isNaN(d)?iso:d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function fmtShort(iso) { if (!iso) return "—"; const d = new Date(iso+"T00:00:00"); return isNaN(d)?iso:d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
+function daysFromToday(iso) { if (!iso) return null; const d = new Date(iso+"T00:00:00"); const t = new Date(); t.setHours(0,0,0,0); return Math.round((d-t)/86400000); }
+function relLabel(iso) { const n = daysFromToday(iso); if (n===null) return ""; if (n===0) return "Today"; return n>0?`in ${n} day${n===1?'':'s'}`:`${-n} day${n===-1?'':'s'} ago`; }
+function esc(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function yearOf(u) { if (!u || !u.goLive) return 'Undated'; const y = new Date(u.goLive+"T00:00:00").getFullYear(); return isNaN(y)?'Undated':y; }
+const STATUS_CLASS = { "Not started":"neutral","In progress":"warning","Passed":"good","Failed":"critical","Blocked":"critical","Ready":"warning","Scheduled":"warning","Moved":"good","Verified":"good" };
+function chip(status) { return `<span class="chip ${STATUS_CLASS[status]||'neutral'}"><span class="dot"></span>${esc(status)}</span>`; }
+
+function renderHeader() {
+  const u = A();
+  const brand = document.getElementById('brand');
+  brand.style.setProperty('--up', u ? upVar(u) : 'var(--accent)');
+  document.getElementById('upgradeName').innerHTML = u ? `<span class="up-dot"></span>${esc(u.version || "Untitled upgrade")}` : "—";
+  const sub = document.getElementById('upgradeSub');
+  if (!u) { sub.innerHTML = "—"; return; }
+  sub.innerHTML = `${u.goLive ? 'Go-live ' + esc(fmtDate(u.goLive)) : 'No go-live date set'}${u.current ? ' <span class="badge-live">In process</span>' : ''}`;
+}
+
+function renderSwitcher() {
+  const ups = data.upgrades || [];
+  const chipEl = document.getElementById('yearChips');
+  const el = document.getElementById('yearStrip');
+  if (!ups.length) { chipEl.innerHTML = ''; el.innerHTML = `<div class="nova-empty" style="grid-column:1/-1">No upgrades yet. Click “New upgrade” to add one.</div>`; return; }
+  const years = [...new Set(ups.map(yearOf))].sort((a,b) => { if (a==='Undated') return 1; if (b==='Undated') return -1; return a-b; });
+  if (viewYear === null || !years.map(String).includes(String(viewYear))) viewYear = yearOf(A());
+  chipEl.innerHTML = years.map(y => `<button class="yr-chip ${String(y)===String(viewYear)?'on':''}" onclick="setViewYear('${y}')">${y}</button>`).join('');
+  const list = ups.filter(u => String(yearOf(u)) === String(viewYear)).slice().sort((a,b) => String(a.goLive||'').localeCompare(String(b.goLive||'')));
+  el.innerHTML = list.map(u => `
+    <div class="yr ${u.current?'current':''} ${u.id===data.activeId?'active':''}" style="--up:${upVar(u)}" onclick="setActive('${u.id}')" title="View this upgrade">
+      <div class="yr-badges">${u.current?'<span class="badge-live">In process</span>':''}${u.id===data.activeId?'<span class="badge-view">Viewing</span>':''}</div>
+      <div class="yr-name">${esc(u.version || '—')}</div>
+      <div class="yr-date">Go-live ${fmtDate(u.goLive)}</div>
+    </div>`).join('');
+}
+function setViewYear(y) { viewYear = (y==='Undated') ? 'Undated' : (isNaN(+y) ? y : +y); renderSwitcher(); }
+function setActive(id) { data.activeId = id; viewYear = yearOf(A()); save(); renderAll(); }
+
+function msDateLabel(m) {
+  if (!m.date) return '—';
+  const start = fmtShort(m.date);
+  if (!m.end || m.end === m.date) return start;
+  const s = new Date(m.date+'T00:00:00'), e = new Date(m.end+'T00:00:00');
+  if (isNaN(e)) return start;
+  const sameMonth = s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear();
+  return `${start}–${sameMonth ? e.getDate() : fmtShort(m.end)}`;
+}
+function msRel(m) {
+  if (!m.date) return '';
+  const start = daysFromToday(m.date), end = daysFromToday(m.end || m.date);
+  if (start <= 0 && end >= 0) return 'in progress';
+  if (start > 0) return relLabel(m.date);
+  return relLabel(m.end || m.date);
+}
+function renderMilestones() {
+  const u = A();
+  const ms = (u ? u.milestones : []).slice().sort((a,b) => String(a.date||'').localeCompare(String(b.date||'')));
+  const el = document.getElementById('milestones');
+  if (!ms.length) { el.innerHTML = `<div class="empty">No milestones yet. Click “Edit” to build the timeline for this upgrade.</div>`; return; }
+  const markIdx = ms.findIndex(m => { const d = daysFromToday(m.end || m.date); return d !== null && d >= 0; });
+  el.innerHTML = ms.map((m, idx) => {
+    const endDays = daysFromToday(m.end || m.date);
+    const past = endDays !== null && endDays < 0;
+    const isNext = idx === markIdx;
+    const label = m.link ? `<a href="${esc(m.link)}" target="_blank" rel="noopener">${esc(m.label||'—')} <span class="link-icon">↗</span></a>` : esc(m.label||'—');
+    return `<div class="ms-row ${isNext?'is-next':''} ${past?'is-past':''}"><div class="ms-date">${msDateLabel(m)}</div><div class="ms-label">${label}</div><div class="ms-rel">${msRel(m)}</div></div>`;
+  }).join('');
+}
+
+function ring(pct, label, frac, color) {
+  const r=32, c=2*Math.PI*r, off=c*(1-pct/100);
+  return `<div class="ring-tile"><div class="ring"><svg width="78" height="78" viewBox="0 0 78 78">
+    <circle cx="39" cy="39" r="${r}" fill="none" stroke="var(--grid)" stroke-width="7"/>
+    <circle cx="39" cy="39" r="${r}" fill="none" stroke="${color}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/>
+    </svg><div class="ring-num">${pct}<span style="font-size:11px">%</span></div></div>
+    <div class="rt-label">${label}</div><div class="rt-frac">${frac}</div></div>`;
+}
+function pct(done,total){ return total===0?0:Math.round(100*done/total); }
+function renderProgress() {
+  const u = A(); const nova=u?u.nova:[], testing=u?u.testing:[], migs=u?u.migrations:[];
+  const novaDone = nova.filter(n=>n.done).length;
+  const testDone = testing.filter(t=>t.status==='Passed').length;
+  const migDone = migs.filter(m=>m.status==='Moved'||m.status==='Verified').length;
+  document.getElementById('progressRow').innerHTML = [
+    ring(pct(novaDone,nova.length),"Nova Notes",`${novaDone}/${nova.length} reviewed`,"var(--accent)"),
+    ring(pct(testDone,testing.length),"Testing",`${testDone}/${testing.length} passed`,"var(--good)"),
+    ring(pct(migDone,migs.length),"Migrations",`${migDone}/${migs.length} moved`,"#1baf7a")
+  ].join('');
+}
+
+function renderNova() {
+  const u = A(); const nova = u ? u.nova : [];
+  document.getElementById('novaCount').textContent = nova.length;
+  const el = document.getElementById('novaCols');
+  const roster = [...(data.analysts||[])];
+  nova.forEach(n => { const o = n.owner; if (o && !roster.includes(o)) roster.push(o); });
+  if (nova.some(n => !n.owner)) roster.push('Unassigned');
+  if (!roster.length) { el.innerHTML = `<div class="nova-empty" style="grid-column:1/-1">No analysts yet. Click “Analysts” to add your team, then add notes.</div>`; return; }
+  el.innerHTML = roster.map(o => {
+    const notes = nova.filter(n => (n.owner||'Unassigned') === o);
+    const items = notes.length ? notes.map(n => {
+      const label = `<span class="ni-num">${esc(n.number||'—')}</span> ${esc(n.title||'Untitled')}`;
+      const main = n.link ? `<a href="${esc(n.link)}" target="_blank" rel="noopener">${label} <span class="link-icon">↗</span></a>` : label;
+      const cm = n.cmTicket ? `<div class="ni-cm">CM ${esc(n.cmTicket)}</div>` : '';
+      return `<div class="nova-item ${n.done?'done':''} ${n.cmTicket?'has-cm':''}"><div class="ni-main">${main}${cm}</div><div class="ni-actions">
+        <button class="icon small ghost" title="Mark reviewed" onclick="toggleNova('${n.id}')">${n.done?'✓':'○'}</button>
+        <button class="icon small ghost" title="Edit" onclick="openNovaModal('${n.id}')">✎</button>
+        <button class="icon small ghost danger" title="Delete" onclick="del('nova','${n.id}')">✕</button></div></div>`;
+    }).join('') : `<div class="nova-empty">No notes yet</div>`;
+    return `<div class="nova-col"><div class="nova-col-head"><span class="ncn">${esc(o)}</span><span class="count">${notes.length}</span></div><div class="nova-col-body">${items}</div></div>`;
+  }).join('');
+}
+
+function renderCm() {
+  const u = A();
+  const skew = u && u.versionSkewTicket;
+  document.getElementById('cmSkew').innerHTML = `<span class="cm-l">Version skew CM ticket:</span>${skew ? `<span class="ni-cm">${esc(skew)}</span>` : '<span class="cm-empty">not set</span>'}`;
+  const items = (u && u.cmInstructions) || [];
+  const el = document.getElementById('cmItems');
+  if (!items.length) { el.innerHTML = `<span class="cm-empty">No CM instructions yet — click ✎ to add how the CM ticket should be filled for this upgrade.</span>`; return; }
+  el.innerHTML = items.map(it => `<span class="cm-item"><span class="cm-l">${esc(it.label||'')}:</span> <span class="cm-v">${esc(it.value||'')}</span></span>`).join('');
+}
+function renderCmList() {
+  const u = A();
+  const rows = [];
+  if (u && u.versionSkewTicket) rows.push({ tk: u.versionSkewTicket, label: 'Version skew', sub: 'generic', link: '' });
+  (u ? u.nova : []).forEach(n => { if (n.cmTicket) rows.push({ tk: n.cmTicket, label: `${n.number||''} ${n.title||''}`.trim(), sub: n.owner||'', link: n.link||'' }); });
+  document.getElementById('cmCount').textContent = rows.length;
+  const el = document.getElementById('cmList');
+  if (!rows.length) { el.innerHTML = `<div class="cm-list-empty">No CM tickets recorded yet. Add one on a Nova Note, or set the Version skew ticket above.</div>`; return; }
+  el.innerHTML = rows.map(r => {
+    const forHtml = r.link ? `<a href="${esc(r.link)}" target="_blank" rel="noopener">${esc(r.label)}</a>` : esc(r.label);
+    return `<div class="cm-row"><span class="cm-tk">${esc(r.tk)}</span><span class="cm-for">${forHtml}${r.sub?` <span class="cm-sub">· ${esc(r.sub)}</span>`:''}</span></div>`;
+  }).join('');
+}
+
+function linkChips(arr, emptyMsg) {
+  if (!arr || !arr.length) return `<span class="links-empty">${esc(emptyMsg)}</span>`;
+  return arr.map(l => `<a class="link-chip" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label||l.url||'link')} <span class="lc-ic">↗</span></a>`).join('');
+}
+function renderTestLinks() {
+  document.getElementById('resourceLinks').innerHTML = linkChips(data.testingResources, 'No standing resources yet — click ✎ to add them.');
+  const u = A();
+  document.getElementById('upgradeLinks').innerHTML = linkChips(u ? u.testLinks : [], 'No links for this upgrade yet — add the cycle’s toolkits and assigned testing.');
+}
+
+function renderTesting() {
+  const u = A(); const testing = u ? u.testing : [];
+  const body = document.getElementById('testBody');
+  const f = document.getElementById('testFilter').value;
+  document.getElementById('testCount').textContent = testing.length;
+  if (!testing.length) { body.innerHTML = `<tr><td colspan="8" class="empty">No test items yet. Add items from the hosting team’s testing list.</td></tr>`; return; }
+  const rows = testing.filter(t => !f || t.status === f);
+  if (!rows.length) { body.innerHTML = `<tr><td colspan="8" class="empty">No items match this filter.</td></tr>`; return; }
+  const done = s => s==='Passed'||s==='Failed';
+  body.innerHTML = rows.map(t => {
+    const item = t.link ? `<a href="${esc(t.link)}" target="_blank" rel="noopener">${esc(t.item||'Untitled')} <span class="link-icon">↗</span></a>` : esc(t.item||'—');
+    const compl = t.completed ? `<span class="mono">${fmtShort(t.completed)}</span>` : (done(t.status)?'<span class="muted-inline">—</span>':'<span class="muted-inline">·</span>');
+    return `<tr>
+      <td><div class="cell-main">${item}</div>${t.notes?`<div class="cell-sub">${esc(t.notes)}</div>`:''}</td>
+      <td>${t.application?`<span class="tag">${esc(t.application)}</span>`:'<span class="muted-inline">—</span>'}</td>
+      <td>${esc(t.environment||'—')}</td><td>${esc(t.tester||'—')}</td>
+      <td class="mono">${fmtShort(t.target)}</td><td>${compl}</td><td>${chip(t.status)}</td>
+      <td class="actions"><button class="icon small ghost" title="Edit" onclick="openTestModal('${t.id}')">✎</button><button class="icon small ghost danger" title="Delete" onclick="del('testing','${t.id}')">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderMigrations() {
+  const u = A(); const migs = u ? u.migrations : [];
+  const body = document.getElementById('migBody');
+  const f = document.getElementById('migFilter').value;
+  document.getElementById('migCount').textContent = migs.length;
+  if (!migs.length) { body.innerHTML = `<tr><td colspan="7" class="empty">No migrations yet. Add changes that need to move between environments.</td></tr>`; return; }
+  const rows = migs.filter(m => !f || m.status === f);
+  if (!rows.length) { body.innerHTML = `<tr><td colspan="7" class="empty">No items match this filter.</td></tr>`; return; }
+  body.innerHTML = rows.map(m => `<tr>
+    <td class="mono cell-main">${esc(m.change||'—')}</td>
+    <td><div class="cell-main">${esc(m.description||'—')}</div>${m.dependencies?`<div class="cell-sub">Depends on: ${esc(m.dependencies)}</div>`:''}</td>
+    <td><span class="envflow">${esc(m.from||'?')}<span class="arrow">→</span>${esc(m.to||'?')}</span></td>
+    <td>${esc(m.owner||'—')}</td><td class="mono">${fmtShort(m.date)}</td><td>${chip(m.status)}</td>
+    <td class="actions"><button class="icon small ghost" title="Edit" onclick="openMigModal('${m.id}')">✎</button><button class="icon small ghost danger" title="Delete" onclick="del('migrations','${m.id}')">✕</button></td>
+  </tr>`).join('');
+}
+
+function renderAll() {
+  applyAccent();
+  renderHeader(); renderSwitcher(); renderMilestones(); renderProgress();
+  renderNova(); renderCm(); renderCmList(); renderTesting(); renderMigrations(); renderTestLinks();
+  const stamp = new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
+  let note;
+  if (dirty) note = '<strong>You have local changes not yet published.</strong> Click <strong>Export</strong> to download data.json, then commit it to your repo to share with the team.';
+  else if (dataSource === 'published') note = 'Showing the team’s published version.';
+  else if (dataSource === 'embedded') note = 'Starter data — no published data.json found yet.';
+  else note = 'Local copy on this device.';
+  const pub = data.publishedAt ? ` · published ${new Date(data.publishedAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}` : '';
+  document.getElementById('footerNote').innerHTML = `${data.upgrades.length} upgrade${data.upgrades.length===1?'':'s'}${pub} · ${note} &nbsp;·&nbsp; Rendered ${stamp}`;
+}
+
+const overlay = document.getElementById('overlay');
+const modal = document.getElementById('modal');
+function closeModal(){ overlay.classList.remove('open'); modal.innerHTML=''; }
+overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+function val(id){ const el=document.getElementById(id); return el?el.value.trim():''; }
+function field(label, id, v, type='text', ph='') { return `<div class="field"><label for="${id}">${label}</label><input id="${id}" type="${type}" value="${esc(v??'')}" placeholder="${esc(ph)}"></div>`; }
+function selectField(label, id, v, opts) { return `<div class="field"><label for="${id}">${label}</label><select id="${id}">${opts.map(o=>`<option ${o===v?'selected':''}>${esc(o)}</option>`).join('')}</select></div>`; }
+function textField(label, id, v, ph='') { return `<div class="field"><label for="${id}">${label}</label><textarea id="${id}" placeholder="${esc(ph)}">${esc(v??'')}</textarea></div>`; }
+function openModal(html){ modal.innerHTML = html; overlay.classList.add('open'); const first = modal.querySelector('input,select,textarea'); if(first) setTimeout(()=>first.focus(),40); }
+
+function openAddUpgrade() {
+  const opts = data.upgrades.map(u => `<option value="${u.id}">${esc(u.version||'(untitled)')}</option>`).join('');
+  openModal(`
+    <div class="modal-head"><h3>New upgrade</h3><button class="icon ghost" onclick="closeModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="grid2">${field('Version','a_version','','text',"e.g. May'26")}${field('Our go-live','a_golive','','date')}</div>
+      <div class="field"><label for="a_copy">Copy milestone template from</label><select id="a_copy"><option value="">— none (start blank) —</option>${opts}</select></div>
+      <label class="checkline"><input type="checkbox" id="a_current"> Mark as currently in process</label>
+      <div class="checkline muted-inline">Analysts and CM instructions carry over. Nova Notes, testing, and migrations start empty; copied milestones keep their labels with blank dates.</div>
+    </div>
+    <div class="modal-foot"><span></span><div><button class="ghost" onclick="closeModal()">Cancel</button> <button class="primary" onclick="createUpgrade()">Create</button></div></div>
+  `);
+}
+function createUpgrade() {
+  const version = val('a_version'), goLive = val('a_golive');
+  if (!version && !goLive) { toast('Add a version or a go-live date'); return; }
+  const copyId = val('a_copy');
+  let milestones = [], cmInstructions = [];
+  if (copyId) { const t = data.upgrades.find(u=>u.id===copyId); if (t) { milestones = (t.milestones||[]).map(m => ({ date:'', end:'', label:m.label, link:'' })); cmInstructions = (t.cmInstructions||[]).map(c => ({ ...c })); } }
+  const up = { id: uid(), version, goLive, current:false, notes:'', milestones, nova:[], testing:[], migrations:[], testLinks:[], cmInstructions, versionSkewTicket:'' };
+  if (document.getElementById('a_current').checked) { data.upgrades.forEach(x=>x.current=false); up.current = true; }
+  data.upgrades.push(up); data.activeId = up.id; viewYear = yearOf(up);
+  save(); renderAll(); closeModal(); toast('Upgrade created');
+}
+
+function openUpgradeModal() {
+  const u = A(); if (!u) return;
+  openModal(`
+    <div class="modal-head"><h3>Edit upgrade</h3><button class="icon ghost" onclick="closeModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="grid2">${field('Version','u_version',u.version,'text',"e.g. Feb'26")}${field('Our go-live','u_golive',u.goLive,'date')}</div>
+      <label class="checkline"><input type="checkbox" id="u_current" ${u.current?'checked':''}> This upgrade is currently in process</label>
+      ${textField('Notes','u_notes',u.notes,'Any context for this upgrade')}
+      <div class="checkline muted-inline">Milestone dates are edited under “Milestones — this upgrade”.</div>
+    </div>
+    <div class="modal-foot"><button class="ghost danger" onclick="deleteUpgrade()">Delete upgrade</button><div><button class="ghost" onclick="closeModal()">Cancel</button> <button class="primary" onclick="saveUpgrade()">Save</button></div></div>
+  `);
+}
+function saveUpgrade() {
+  const u = A();
+  u.version = val('u_version'); u.goLive = val('u_golive'); u.notes = val('u_notes');
+  if (document.getElementById('u_current').checked) { data.upgrades.forEach(x=>x.current=false); u.current = true; } else { u.current = false; }
+  viewYear = yearOf(u);
+  save(); renderAll(); closeModal(); toast('Upgrade saved');
+}
+function deleteUpgrade() {
+  if (data.upgrades.length <= 1) { toast("Can't delete the only upgrade"); return; }
+  const u = A(); const idx = data.upgrades.findIndex(x=>x.id===u.id);
+  const removed = data.upgrades.splice(idx,1)[0];
+  data.activeId = (data.upgrades[idx] || data.upgrades[idx-1] || data.upgrades[0]).id;
+  viewYear = yearOf(A());
+  save(); renderAll(); closeModal();
+  toast('Upgrade deleted', 'Undo', () => { data.upgrades.splice(idx,0,removed); data.activeId = removed.id; viewYear = yearOf(removed); save(); renderAll(); });
+}
+
+let anDraft = [];
+function openAnalystsModal() { anDraft = [...(data.analysts||[])]; renderAnModal(); }
+function collectAn() { anDraft = anDraft.map((_,i) => val('an_'+i)); }
+function addAn() { collectAn(); anDraft.push(''); renderAnModal(); }
+function removeAn(i) { collectAn(); anDraft.splice(i,1); renderAnModal(); }
+function renderAnModal() {
+  const rows = anDraft.map((a,i)=>`<div class="an-edit-row"><input type="text" id="an_${i}" value="${esc(a)}" placeholder="Analyst name"><button class="icon small ghost danger" title="Remove" onclick="removeAn(${i})">✕</button></div>`).join('');
+  openModal(`
+    <div class="modal-head"><h3>Edit analysts</h3><button class="icon ghost" onclick="closeModal()">✕</button></div>
+    <div class="modal-body">
+      ${rows || '<div class="muted-inline">No analysts yet — add the first below.</div>'}
+      <button class="small ghost" style="justify-self:start" onclick="addAn()">+ Add analyst</button>
+      <div class="checkline muted-inline">These are the Nova Notes columns. They carry across every upgrade. Removing one won’t delete notes already assigned to that name.</div>
+    </div>
+    <div class="modal-foot"><span></span><div><button class="ghost" onclick="closeModal()">Cancel</button> <button class="primary" onclick="saveAnalysts()">Save</button></div></div>
+  `);
+}
+function saveAnalysts() { collectAn(); data.analysts = anDraft.map(s=>s.trim()).filter(Boolean); save(); renderAll(); closeModal(); toast('Analysts saved'); }
+
+let msDraft = [];
+function openMilestonesModal() { const u=A(); msDraft = (u?u.milestones:[]).map(m=>({...m})); renderMsModal(); }
+function collectMs() { msDraft = msDraft.map((_,i)=>({ date: val('ms_date_'+i), end: val('ms_end_'+i), label: val('ms_label_'+i), link: val('ms_link_'+i) })); }
+function addMs() { collectMs(); msDraft.push({date:'',end:'',label:'',link:''}); renderMsModal(); }
+function removeMs(i) { collectMs(); msDraft.splice(i,1); renderMsModal(); }
+function renderMsModal() {
+  const rows = msDraft.map((m,i)=>`<div class="ms-edit-block">
+    <div class="ms-edit-dates">
+      <label class="ms-lbl">Start<input type="date" id="ms_date_${i}" value="${esc(m.date||'')}"></label>
+      <label class="ms-lbl">End (optional)<input type="date" id="ms_end_${i}" value="${esc(m.end||'')}"></label>
+    </div>
+    <div class="ms-edit-main">
+      <input type="text" id="ms_label_${i}" value="${esc(m.label||'')}" placeholder="Milestone">
+      <input type="text" id="ms_link_${i}" value="${esc(m.link||'')}" placeholder="Link (optional)">
+      <button class="icon small ghost danger" title="Remove" onclick="removeMs(${i})">✕</button>
+    </div></div>`).join('');
+  openModal(`
+    <div class="modal-head"><h3>Edit milestones</h3><button class="icon ghost" onclick="closeModal()">✕</button></div>
+    <div class="modal-body">
+      ${rows || '<div class="muted-inline">No milestones yet — add the first below.</div>'}
+      <button class="small ghost" style="justify-self:start" onclick="addMs()">+ Add milestone</button>
+      <div class="checkline muted-inline">Add an End date for anything that spans days (e.g. a testing week); leave End blank for single-day milestones. Update the dates each cycle.</div>
+    </div>
+    <div class="modal-foot"><span></span><div><button class="ghost" onclick="closeModal()">Cancel</button> <button class="primary" onclick="saveMilestones()">Save</button></div></div>
+  `);
+}
+function saveMilestones() { collectMs(); A().milestones = msDraft.filter(m=>m.date||m.label); save(); renderAll(); closeModal(); toast('Milestones saved'); }
+
+function openNovaModal(id) {
+  const nova = A().nova;
+  const n = id ? nova.find(x=>x.id===id) : {};
+  const owners = [...(data.analysts||[])];
+  nova.forEach(x=>{ if(x.owner && !owners.includes(x.owner)) owners.push(x.owner); });
+  openModal(`
+    <div class="modal-head"><h3>${id?'Edit':'Add'} Nova Note</h3><button class="icon ghost" onclick="closeModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="grid2">
+        ${field('Nova # / ID','n_number',n.number,'text','e.g. 918727')}
+        <div class="field"><label for="n_owner">Assigned to</label><input id="n_owner" type="text" list="ownerList" value="${esc(n.owner||'')}" placeholder="Analyst"><datalist id="ownerList">${owners.map(o=>`<option value="${esc(o)}"></option>`).join('')}</datalist></div>
+      </div>
+      ${field('Title','n_title',n.title,'text','Note title')}
+      ${field('Link','n_link',n.link,'text','Leave blank to auto-build from the Nova #')}
+      ${field('CM Ticket # (optional)','n_cm',n.cmTicket,'text','Only if this note has a CM ticket')}
+      <div class="checkline muted-inline">Leave the link blank and it’s built as nova.epic.com/Select?CstID=${CST_ID}&RnID=[number].</div>
+    </div>
+    <div class="modal-foot"><span></span><div><button class="ghost" onclick="closeModal()">Cancel</button> <button class="primary" onclick="saveNova('${id||''}')">Save</button></div></div>
+  `);
+}
+function saveNova(id) {
+  const number = val('n_number'); let link = val('n_link');
+  if (!link && number) link = NOVA_URL(number);
+  const rec = { number, title: val('n_title'), link, owner: val('n_owner'), cmTicket: val('n_cm') };
+  const nova = A().nova;
+  if (id) { Object.assign(nova.find(x=>x.id===id), rec); }
+  else { rec.id = uid(); rec.done = false; nova.push(rec); }
+  save(); renderAll(); closeModal(); toast('Nova Note saved');
+}
+function toggleNova(id){ const n = A().nova.find(x=>x.id===id); if(n){ n.done=!n.done; save(); renderAll(); } }
+
+let cmDraft = [], cmSkewDraft = '';
+function openCmModal() { const u=A(); cmDraft = ((u&&u.cmInstructions)||[]).map(x=>({...x})); cmSkewDraft = (u&&u.versionSkewTicket)||''; renderCmModal(); }
+function collectCm() { cmSkewDraft = val('cm_skew'); cmDraft = cmDraft.map((_,i)=>({ label: val('cm_l_'+i), value: val('cm_v_'+i) })); }
+function addCm() { collectCm(); cmDraft.push({label:'',value:''}); renderCmModal(); }
+function removeCm(i) { collectCm(); cmDraft.splice(i,1); renderCmModal(); }
+function renderCmModal() {
+  const rows = cmDraft.map((c,i)=>`<div class="cm-edit-row">
+    <input type="text" id="cm_l_${i}" value="${esc(c.label||'')}" placeholder="Field (e.g. Priority)">
+    <input type="text" id="cm_v_${i}" value="${esc(c.value||'')}" placeholder="Value (e.g. Upgrade Phase 2)">
+    <button class="icon small ghost danger" title="Remove" onclick="removeCm(${i})">✕</button></div>`).join('');
+  openModal(`
+    <div class="modal-head"><h3>CM ticket instructions</h3><button class="icon ghost" onclick="closeModal()">✕</button></div>
+    <div class="modal-body">
+      ${field('Version skew CM ticket # (optional)','cm_skew',cmSkewDraft,'text','Generic CM ticket for version skew')}
+      <div class="cm-edit-row" style="font-size:11px;color:var(--muted);font-weight:650;text-transform:uppercase;letter-spacing:.04em;margin-top:2px;"><span>Field</span><span>Value</span><span></span></div>
+      ${rows || '<div class="muted-inline">No instructions yet — add the first below.</div>'}
+      <button class="small ghost" style="justify-self:start" onclick="addCm()">+ Add field</button>
+      <div class="checkline muted-inline">The Version skew ticket is the one generic CM ticket for this upgrade. Below is how to fill the CM ticket (Priority, Reason, Due in Production, etc.) — update the values each cycle.</div>
+    </div>
+    <div class="modal-foot"><span></span><div><button class="ghost" onclick="closeModal()">Cancel</button> <button class="primary" onclick="saveCm()">Save</button></div></div>
+  `);
+}
+function saveCm() { collectCm(); const u=A(); if (u) { u.versionSkewTicket = cmSkewDraft; u.cmInstructions = cmDraft.filter(c=>c.label||c.value); } save(); renderAll(); closeModal(); toast('CM instructions saved'); }
+
+let lkDraft = [], lkTarget = null, lkTitle = '', lkSub = '';
+function openResourcesModal() { lkTarget='resources'; lkTitle='Standing testing resources'; lkSub='These show on every upgrade — org-wide document locations.'; lkDraft=(data.testingResources||[]).map(x=>({...x})); renderLkModal(); }
+function openTestLinksModal() { const u=A(); lkTarget='upgrade'; lkTitle="This upgrade's testing links"; lkSub='These belong to the current upgrade only — the cycle’s toolkits and assigned testing.'; lkDraft=((u&&u.testLinks)||[]).map(x=>({...x})); renderLkModal(); }
+function collectLk() { lkDraft = lkDraft.map((_,i)=>({ label: val('lk_label_'+i), url: val('lk_url_'+i) })); }
+function addLk() { collectLk(); lkDraft.push({label:'',url:''}); renderLkModal(); }
+function removeLk(i) { collectLk(); lkDraft.splice(i,1); renderLkModal(); }
+function renderLkModal() {
+  const rows = lkDraft.map((l,i)=>`<div class="lk-edit-row">
+    <input type="text" id="lk_label_${i}" value="${esc(l.label||'')}" placeholder="Label">
+    <input type="text" id="lk_url_${i}" value="${esc(l.url||'')}" placeholder="https://...">
+    <button class="icon small ghost danger" title="Remove" onclick="removeLk(${i})">✕</button></div>`).join('');
+  openModal(`
+    <div class="modal-head"><h3>${esc(lkTitle)}</h3><button class="icon ghost" onclick="closeModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="lk-edit-row" style="font-size:11px;color:var(--muted);font-weight:650;text-transform:uppercase;letter-spacing:.04em;"><span>Label</span><span>Link</span><span></span></div>
+      ${rows || '<div class="muted-inline">No links yet — add the first below.</div>'}
+      <button class="small ghost" style="justify-self:start" onclick="addLk()">+ Add link</button>
+      <div class="checkline muted-inline">${esc(lkSub)}</div>
+    </div>
+    <div class="modal-foot"><span></span><div><button class="ghost" onclick="closeModal()">Cancel</button> <button class="primary" onclick="saveLk()">Save</button></div></div>
+  `);
+}
+function saveLk() { collectLk(); const clean = lkDraft.filter(l => l.label || l.url); if (lkTarget === 'resources') data.testingResources = clean; else { const u = A(); if (u) u.testLinks = clean; } save(); renderAll(); closeModal(); toast('Links saved'); }
+
+function openTestModal(id) {
+  const t = id ? A().testing.find(x=>x.id===id) : {};
+  openModal(`
+    <div class="modal-head"><h3>${id?'Edit':'Add'} test item</h3><button class="icon ghost" onclick="closeModal()">✕</button></div>
+    <div class="modal-body">
+      ${field('Test item / script name','t_item',t.item,'text','Workflow or script being tested')}
+      ${field('Script link','t_link',t.link,'text','Where the script lives — SharePoint, OneNote, Epic, etc.')}
+      <div class="grid2">${field('Application','t_app',t.application,'text','e.g. Beaker')}${field('Environment','t_env',t.environment,'text','e.g. TST')}</div>
+      <div class="grid2">${field('Assigned to','t_tester',t.tester,'text')}${selectField('Status','t_status',t.status||'Not started',['Not started','In progress','Passed','Failed','Blocked'])}</div>
+      <div class="grid2">${field('Target date','t_target',t.target,'date')}${field('Completed date','t_completed',t.completed,'date')}</div>
+      ${textField('Notes','t_notes',t.notes,'Findings, defects, etc.')}
+    </div>
+    <div class="modal-foot"><span></span><div><button class="ghost" onclick="closeModal()">Cancel</button> <button class="primary" onclick="saveTest('${id||''}')">Save</button></div></div>
+  `);
+}
+function saveTest(id) {
+  const rec = { item: val('t_item'), link: val('t_link'), application: val('t_app'), environment: val('t_env'), tester: val('t_tester'), target: val('t_target'), completed: val('t_completed'), status: val('t_status'), notes: val('t_notes') };
+  if ((rec.status==='Passed'||rec.status==='Failed') && !rec.completed) rec.completed = new Date().toISOString().slice(0,10);
+  const testing = A().testing;
+  if (id) { Object.assign(testing.find(x=>x.id===id), rec); } else { rec.id = uid(); testing.push(rec); }
+  save(); renderAll(); closeModal(); toast('Test item saved');
+}
+
+function openMigModal(id) {
+  const m = id ? A().migrations.find(x=>x.id===id) : {};
+  openModal(`
+    <div class="modal-head"><h3>${id?'Edit':'Add'} migration</h3><button class="icon ghost" onclick="closeModal()">✕</button></div>
+    <div class="modal-body">
+      ${field('Change / record ID','m_change',m.change,'text','e.g. CR-4821 or record #')}
+      ${field('Description','m_desc',m.description,'text','What is moving')}
+      <div class="grid2">${field('From environment','m_from',m.from,'text','e.g. POC')}${field('To environment','m_to',m.to,'text','e.g. TST')}</div>
+      <div class="grid2">${field('Owner','m_owner',m.owner,'text')}${field('Planned date','m_date',m.date,'date')}</div>
+      ${selectField('Status','m_status',m.status||'Not started',['Not started','Ready','Scheduled','Moved','Verified','Blocked'])}
+      ${field('Dependencies','m_deps',m.dependencies,'text','Other changes this depends on')}
+    </div>
+    <div class="modal-foot"><span></span><div><button class="ghost" onclick="closeModal()">Cancel</button> <button class="primary" onclick="saveMig('${id||''}')">Save</button></div></div>
+  `);
+}
+function saveMig(id) {
+  const rec = { change: val('m_change'), description: val('m_desc'), from: val('m_from'), to: val('m_to'), owner: val('m_owner'), date: val('m_date'), status: val('m_status'), dependencies: val('m_deps') };
+  const migs = A().migrations;
+  if (id) { Object.assign(migs.find(x=>x.id===id), rec); } else { rec.id = uid(); migs.push(rec); }
+  save(); renderAll(); closeModal(); toast('Migration saved');
+}
+
+let lastDeleted = null;
+function del(coll, id) {
+  const up = A(); const arr = up[coll]; const idx = arr.findIndex(x=>x.id===id);
+  if (idx === -1) return;
+  lastDeleted = { upId: up.id, coll, idx, item: arr[idx] };
+  arr.splice(idx,1); save(); renderAll();
+  toast('Item deleted', 'Undo', () => { if (!lastDeleted) return; const u = data.upgrades.find(x=>x.id===lastDeleted.upId); if (u) { u[lastDeleted.coll].splice(lastDeleted.idx,0,lastDeleted.item); save(); renderAll(); } lastDeleted = null; });
+}
+
+function exportData() {
+  data.publishedAt = Date.now();
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); } catch (e) {}
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'data.json'; a.click(); URL.revokeObjectURL(a.href);
+  dirty = false; renderAll();
+  toast('Downloaded data.json — commit it to your repo to publish');
+}
+function importData(ev) {
+  const file = ev.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try { const parsed = JSON.parse(e.target.result); if (!Array.isArray(parsed.upgrades)) throw new Error('bad'); normalize(parsed); data = parsed; viewYear = null; dataSource = 'local'; save(); renderAll(); toast('Data imported'); }
+    catch(err){ toast('Could not read that file'); }
+  };
+  reader.readAsText(file); ev.target.value = '';
+}
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme')==='dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  document.getElementById('themeBtn').textContent = next==='dark' ? '☀' : '☾';
+  try { localStorage.setItem('epicDashTheme', next); } catch(e){}
+}
+(function initTheme(){
+  let t='light';
+  try { t = localStorage.getItem('epicDashTheme') || (window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'); } catch(e){}
+  document.documentElement.setAttribute('data-theme', t);
+  document.getElementById('themeBtn').textContent = t==='dark' ? '☀' : '☾';
+})();
+let toastTimer;
+function toast(msg, actionLabel, actionFn) {
+  const el = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  const btn = document.getElementById('toastAction');
+  if (actionLabel) { btn.style.display=''; btn.textContent=actionLabel; btn.onclick=()=>{ actionFn(); el.classList.remove('show'); }; } else { btn.style.display='none'; }
+  el.classList.add('show'); clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove('show'), actionLabel?6000:2600);
+}
+
+init();
+</script>
+</body>
+</html>
