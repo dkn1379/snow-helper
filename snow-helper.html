@@ -342,7 +342,7 @@ function removeUser(e,btn){e.preventDefault();e.stopPropagation();if(confirm("Re
     </a>
     <a class="tt-launch" href="upgrade-dashboard.html"
        onclick="launchConfetti(this);window.open(this.href,'upgradeDash','width=1200,height=900,resizable=yes,scrollbars=yes');return false;"
-       title="Epic Upgrade Dashboard — milestones, nova notes, testing"
+       title="Epic Upgrade Dashboard"
        style="background:linear-gradient(135deg,rgba(42,120,214,.16),rgba(56,189,248,.10));border-color:rgba(56,189,248,.55);">
       <span class="tt-dots">
         <span style="background:#2a78d6;"></span>
@@ -351,8 +351,8 @@ function removeUser(e,btn){e.preventDefault();e.stopPropagation();if(confirm("Re
         <span style="background:#eb6834;"></span>
       </span>
       <span>
-        <span class="tt-launch-title" style="color:#38bdf8;">UPGRADE DASHBOARD &#8599;</span>
-        <span class="tt-launch-sub">Feb &rsquo;26 &middot; milestones &middot; nova notes &middot; testing</span>
+        <span class="tt-launch-title" style="color:#38bdf8;">EPIC UPGRADE &#8599;</span>
+        <span class="tt-launch-sub" id="upgVer">milestones &middot; nova notes &middot; testing</span>
       </span>
     </a>
     <div class="acc-wrap open" id="acc-users">
@@ -645,9 +645,7 @@ function removeUser(e,btn){e.preventDefault();e.stopPropagation();if(confirm("Re
               <div class="lgrid-sm" id="lgrid-side"></div>
             </div>
           </div>
-
-          
-        </div>
+          </div>
         </div>
       </div>
 
@@ -767,6 +765,13 @@ function td(){
 document.getElementById("tstart").onclick=function(){if(run)return;run=true;iv=setInterval(function(){rem--;if(rem<=0){clearInterval(iv);run=false;rem=0;}td();},1000);td();};
 document.getElementById("tpause").onclick=function(){clearInterval(iv);run=false;td();};
 document.getElementById("treset").onclick=function(){clearInterval(iv);run=false;rem=25*60;td();};
+</script>
+
+<script>
+fetch('data.json').then(function(r){return r.json()}).then(function(d){
+  var cur=d.upgrades&&d.upgrades.find(function(u){return u.current});
+  if(cur){var el=document.getElementById('upgVer');if(el)el.textContent=cur.version+' · go-live '+cur.goLive}
+}).catch(function(){});
 </script>
 </body>
 </html>
