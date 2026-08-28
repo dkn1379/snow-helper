@@ -78,7 +78,7 @@
   .ms-lbl { display: grid; gap: 3px; font-size: 10.5px; color: var(--muted); font-weight: 650; text-transform: uppercase; letter-spacing: .03em; }
   .ms-lbl input { width: 100%; }
 
-  .progress-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+  .progress-row { display: flex; justify-content: center; gap: 8px; }
   .ring-tile { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
   .ring { position: relative; width: 78px; height: 78px; }
   .ring svg { transform: rotate(-90deg); }
@@ -304,15 +304,9 @@
       </div>
     </div>
     <p class="block-desc">Testing items from the hosting team — scripts and workflows to validate, who owns each, the environment it's tested in, and its result.</p>
-    <div class="links-wrap">
-      <div class="links-card">
-        <div class="lc-head"><h3>Standing resources</h3><button class="icon small ghost" title="Edit standing resources" onclick="openResourcesModal()">✎</button></div>
-        <div class="link-chips" id="resourceLinks"></div>
-      </div>
-      <div class="links-card">
-        <div class="lc-head"><h3>This upgrade's testing links</h3><button class="icon small ghost" title="Edit this upgrade's links" onclick="openTestLinksModal()">✎</button></div>
-        <div class="link-chips" id="upgradeLinks"></div>
-      </div>
+    <div class="links-card" style="margin-bottom:14px;">
+      <div class="lc-head"><h3>Standing resources</h3><button class="icon small ghost" title="Edit standing resources" onclick="openResourcesModal()">✎</button></div>
+      <div class="link-chips" id="resourceLinks"></div>
     </div>
     <div class="table-card">
       <table>
@@ -650,15 +644,9 @@ function ring(pct, label, frac, color) {
 }
 function pct(done,total){ return total===0?0:Math.round(100*done/total); }
 function renderProgress() {
-  const u = A(); const nova=u?u.nova:[], testing=u?u.testing:[], migs=u?u.migrations:[];
+  const u = A(); const nova=u?u.nova:[];
   const novaDone = nova.filter(n=>n.done).length;
-  const testDone = testing.filter(t=>t.status==='Passed').length;
-  const migDone = migs.filter(m=>m.status==='Moved'||m.status==='Verified').length;
-  document.getElementById('progressRow').innerHTML = [
-    ring(pct(novaDone,nova.length),"Nova Notes",`${novaDone}/${nova.length} reviewed`,"var(--accent)"),
-    ring(pct(testDone,testing.length),"Testing",`${testDone}/${testing.length} passed`,"var(--good)"),
-    ring(pct(migDone,migs.length),"Migrations",`${migDone}/${migs.length} moved`,"#1baf7a")
-  ].join('');
+  document.getElementById('progressRow').innerHTML = ring(pct(novaDone,nova.length),"Nova Notes reviewed",`${novaDone} of ${nova.length}`,"var(--accent)");
 }
 
 function renderNova() {
@@ -713,8 +701,6 @@ function linkChips(arr, emptyMsg) {
 }
 function renderTestLinks() {
   document.getElementById('resourceLinks').innerHTML = linkChips(data.testingResources, 'No standing resources yet — click ✎ to add them.');
-  const u = A();
-  document.getElementById('upgradeLinks').innerHTML = linkChips(u ? u.testLinks : [], 'No links for this upgrade yet — add the cycle’s toolkits and assigned testing.');
 }
 
 function renderTesting() {
