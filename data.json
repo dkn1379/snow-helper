@@ -1,6 +1,6 @@
 {
   "publishedAt": 1,
-  "activeId": "up-feb26",
+  "activeId": "up-may26",
   "analysts": [
     "Darcy",
     "David",
@@ -12,7 +12,8 @@
       "id": "up-feb26",
       "version": "Feb'26",
       "goLive": "2026-08-13",
-      "current": true,
+      "current": false,
+      "done": true,
       "notes": "",
       "milestones": [
         {
@@ -242,6 +243,100 @@
         {
           "label": "Due in Production",
           "value": "8/13/2026"
+        }
+      ],
+      "versionSkewTicket": ""
+    },
+    {
+      "id": "up-may26",
+      "version": "May'26",
+      "goLive": "2026-11-12",
+      "current": true,
+      "done": false,
+      "notes": "",
+      "milestones": [
+        {
+          "date": "2026-09-14",
+          "label": "PJX, REL, POC environments upgrade",
+          "link": ""
+        },
+        {
+          "date": "2026-09-18",
+          "label": "Nova Notes reviewed",
+          "link": ""
+        },
+        {
+          "date": "2026-10-16",
+          "label": "Build deadline",
+          "link": ""
+        },
+        {
+          "date": "2026-10-18",
+          "label": "TST environment upgrade",
+          "link": ""
+        },
+        {
+          "date": "2026-10-19",
+          "label": "POC → TST build migration",
+          "link": ""
+        },
+        {
+          "date": "2026-10-19",
+          "end": "2026-10-23",
+          "label": "Application testing / EUAT",
+          "link": "https://umassmemorial.sharepoint.com/sites/IS-Applications/Program%20Support%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FIS%2DApplications%2FProgram%20Support%20Documents%2FN%2D1%2FFY%2026%20Upgrade%2FMay%2025%20Upgrade%20PRD%2011%2E13%2E25%2FTesting%2FApplication%20Testing&p=true"
+        },
+        {
+          "date": "2026-10-26",
+          "end": "2026-10-30",
+          "label": "Integrated testing",
+          "link": "https://umassmemorial.sharepoint.com/sites/IS-Applications/Program%20Support%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FIS%2DApplications%2FProgram%20Support%20Documents%2FN%2D1%2FFY%2026%20Upgrade%2FMay%2025%20Upgrade%20PRD%2011%2E13%2E25%2FTesting%2FIntegrated%20Testing&p=true"
+        },
+        {
+          "date": "2026-10-26",
+          "label": "BPAM testing",
+          "link": "https://umassmemorial.sharepoint.com/sites/IS-Applications/Program%20Support%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FIS%2DApplications%2FProgram%20Support%20Documents%2FN%2D1%2FFY%2026%20Upgrade%2FMay%2025%20Upgrade%20PRD%2011%2E13%2E25%2FTesting%2FBPAM%20Testing&p=true"
+        },
+        {
+          "date": "2026-11-10",
+          "label": "SUP environment upgrade",
+          "link": ""
+        },
+        {
+          "date": "2026-11-12",
+          "label": "PRD environment upgrade / GO LIVE",
+          "link": ""
+        }
+      ],
+      "nova": [],
+      "testing": [],
+      "migrations": [],
+      "testLinks": [
+        {
+          "label": "Application Testing",
+          "url": "https://umassmemorial.sharepoint.com/sites/IS-Applications/Program%20Support%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FIS%2DApplications%2FProgram%20Support%20Documents%2FN%2D1%2FFY%2026%20Upgrade%2FMay%2025%20Upgrade%20PRD%2011%2E13%2E25%2FTesting%2FApplication%20Testing&p=true"
+        },
+        {
+          "label": "Integrated testing",
+          "url": "https://umassmemorial.sharepoint.com/sites/IS-Applications/Program%20Support%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FIS%2DApplications%2FProgram%20Support%20Documents%2FN%2D1%2FFY%2026%20Upgrade%2FMay%2025%20Upgrade%20PRD%2011%2E13%2E25%2FTesting%2FIntegrated%20Testing&p=true"
+        },
+        {
+          "label": "BPAM testing",
+          "url": "https://umassmemorial.sharepoint.com/sites/IS-Applications/Program%20Support%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FIS%2DApplications%2FProgram%20Support%20Documents%2FN%2D1%2FFY%2026%20Upgrade%2FMay%2025%20Upgrade%20PRD%2011%2E13%2E25%2FTesting%2FBPAM%20Testing&p=true"
+        }
+      ],
+      "cmInstructions": [
+        {
+          "label": "Priority",
+          "value": "Upgrade Phase 2 (Medium)"
+        },
+        {
+          "label": "Reason",
+          "value": "Upgrade"
+        },
+        {
+          "label": "Due in Production",
+          "value": "11/12/2026"
         }
       ],
       "versionSkewTicket": ""
