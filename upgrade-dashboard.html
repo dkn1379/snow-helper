@@ -96,6 +96,10 @@
   .yr .yr-date { font-size: 12px; color: var(--text-2); font-variant-numeric: tabular-nums; }
   .badge-live { font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--up, var(--accent)); background: color-mix(in srgb, var(--up, var(--accent)) 14%, var(--surface-1)); border:1px solid var(--up, var(--accent)); padding: 0 6px; border-radius: 6px; }
   .badge-view { font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  .badge-done { font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); background: var(--surface-1); border: 1px solid var(--border); padding: 0 6px; border-radius: 6px; }
+  .yr.done { opacity: .62; background: var(--surface-2); border-left-color: var(--baseline); }
+  .yr.done:hover { opacity: 1; }
+  .yr.done .yr-name { font-weight: 600; }
   .up-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--up, var(--accent)); display: inline-block; flex-shrink: 0; }
   .yr-chips { display: flex; gap: 6px; flex-wrap: wrap; }
   .yr-chip { font-size: 12px; font-weight: 600; padding: 3px 11px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-2); cursor: pointer; }
@@ -267,18 +271,18 @@
       <div class="bh-left"><h2>Nova Notes</h2><span class="count" id="novaCount">0</span></div>
       <div class="filterbar">
         <button class="ghost small" onclick="openAnalystsModal()">✎ Analysts</button>
+        <button class="ghost small" onclick="openNovaPasteModal()">⧉ Paste from email</button>
         <button class="primary small" onclick="openNovaModal()">+ Add Nova Note</button>
       </div>
     </div>
     <p class="block-desc">Assigned Nova Notes for this upgrade, by analyst — number and title, each linking to the note in Epic.</p>
     <div class="cm-card">
-      <div class="lc-head"><h3>CM ticket instructions</h3><button class="icon small ghost" title="Edit CM instructions" onclick="openCmModal()">✎</button></div>
+      <div class="lc-head"><h3>CM tickets</h3><button class="icon small ghost" title="Edit CM instructions" onclick="openCmModal()">✎</button></div>
       <div class="cm-skew" id="cmSkew"></div>
       <div class="cm-items" id="cmItems"></div>
-      <div class="cm-hint">How to fill the CM ticket for this upgrade. Not every note has a CM ticket — add the ticket number on the ones that do.</div>
-    </div>
-    <div class="cm-card">
-      <div class="lc-head"><h3>CMs for this upgrade</h3><span class="count" id="cmCount">0</span></div>
+      <div class="cm-hint">How to fill the CM ticket for this upgrade. Not every note has a CM ticket — add the number on the ones that do.</div>
+      <div style="border-top:1px solid var(--grid);margin:13px 0 9px;"></div>
+      <div class="lc-head" style="margin-bottom:6px;"><h3>Tickets logged</h3><span class="count" id="cmCount">0</span></div>
       <div class="cm-list" id="cmList"></div>
     </div>
     <div class="nova-cols" id="novaCols"></div>
@@ -363,14 +367,17 @@ const NOVA_URL = n => `https://nova.epic.com/Select?CstID=${CST_ID}&RnID=${n}`;
 const SP_APP  = "https://umassmemorial.sharepoint.com/sites/IS-Applications/_layouts/15/guestaccess.aspx?share=IgCScAHryyf2Ta8v25YpQ248AfgvgJD5b0P5qv-Yyinpbig&e=wj7PoK";
 const SP_INT  = "https://umassmemorial.sharepoint.com/sites/IS-Applications/_layouts/15/guestaccess.aspx?share=IgBgAeDwWzIxR5frVSjMCqmHAbr-Dj9qeIoqrtu3R5EhMEI&e=ZSMQZa";
 const SP_BPAM = "https://umassmemorial.sharepoint.com/sites/IS-Applications/_layouts/15/guestaccess.aspx?share=IgBgAeDwWzIxR5frVSjMCqmHAbr-Dj9qeIoqrtu3R5EhMEI&e=ZSMQZa";
+const MAY_APP  = "https://umassmemorial.sharepoint.com/sites/IS-Applications/Program%20Support%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FIS%2DApplications%2FProgram%20Support%20Documents%2FN%2D1%2FFY%2026%20Upgrade%2FMay%2025%20Upgrade%20PRD%2011%2E13%2E25%2FTesting%2FApplication%20Testing&p=true";
+const MAY_INT  = "https://umassmemorial.sharepoint.com/sites/IS-Applications/Program%20Support%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FIS%2DApplications%2FProgram%20Support%20Documents%2FN%2D1%2FFY%2026%20Upgrade%2FMay%2025%20Upgrade%20PRD%2011%2E13%2E25%2FTesting%2FIntegrated%20Testing&p=true";
+const MAY_BPAM = "https://umassmemorial.sharepoint.com/sites/IS-Applications/Program%20Support%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FIS%2DApplications%2FProgram%20Support%20Documents%2FN%2D1%2FFY%2026%20Upgrade%2FMay%2025%20Upgrade%20PRD%2011%2E13%2E25%2FTesting%2FBPAM%20Testing&p=true";
 const N = (num, owner, title) => ({ id: 'nn'+num, number: String(num), title, link: NOVA_URL(num), owner, done: false });
 
 const STARTER = {
   publishedAt: 0,
-  activeId: 'up-feb26',
+  activeId: 'up-may26',
   analysts: ["Darcy", "David", "Kelsy", "Gui"],
   upgrades: [{
-    id: 'up-feb26', version: "Feb'26", goLive: "2026-08-13", current: true, notes: "",
+    id: 'up-feb26', version: "Feb'26", goLive: "2026-08-13", current: false, done: true, notes: "",
     milestones: [
       { date: "2026-06-15", label: "PJX, REL, POC environments upgrade", link: "" },
       { date: "2026-06-19", label: "Nova Notes reviewed", link: "" },
@@ -414,6 +421,33 @@ const STARTER = {
       { label: "Due in Production", value: "8/13/2026" }
     ],
     versionSkewTicket: ""
+  }, {
+    id: 'up-may26', version: "May'26", goLive: "2026-11-12", current: true, done: false, notes: "",
+    milestones: [
+      { date: "2026-09-14", label: "PJX, REL, POC environments upgrade", link: "" },
+      { date: "2026-09-18", label: "Nova Notes reviewed", link: "" },
+      { date: "2026-10-16", label: "Build deadline", link: "" },
+      { date: "2026-10-18", label: "TST environment upgrade", link: "" },
+      { date: "2026-10-19", label: "POC → TST build migration", link: "" },
+      { date: "2026-10-19", end: "2026-10-23", label: "Application testing / EUAT", link: MAY_APP },
+      { date: "2026-10-26", end: "2026-10-30", label: "Integrated testing", link: MAY_INT },
+      { date: "2026-10-26", label: "BPAM testing", link: MAY_BPAM },
+      { date: "2026-11-10", label: "SUP environment upgrade", link: "" },
+      { date: "2026-11-12", label: "PRD environment upgrade / GO LIVE", link: "" }
+    ],
+    nova: [],
+    testing: [], migrations: [],
+    testLinks: [
+      { label: "Application Testing", url: MAY_APP },
+      { label: "Integrated testing", url: MAY_INT },
+      { label: "BPAM testing", url: MAY_BPAM }
+    ],
+    cmInstructions: [
+      { label: "Priority", value: "Upgrade Phase 2 (Medium)" },
+      { label: "Reason", value: "Upgrade" },
+      { label: "Due in Production", value: "11/12/2026" }
+    ],
+    versionSkewTicket: ""
   }],
   testingResources: [
     { label: "Testing library (all IS)", url: "https://umassmemorial.sharepoint.com/sites/IS-Applications/_layouts/15/guestaccess.aspx?share=IgBgAeDwWzIxR5frVSjMCqmHAbr-Dj9qeIoqrtu3R5EhMEI&e=ZSMQZa" },
@@ -422,7 +456,7 @@ const STARTER = {
   ]
 };
 
-let data = null, viewYear = null, dataSource = 'embedded', dirty = false;
+let data = null, viewYear = null, dataSource = 'embedded', dirty = false, showCompleted = false;
 
 function normalize(d) {
   if (!Array.isArray(d.upgrades)) d.upgrades = JSON.parse(JSON.stringify(STARTER.upgrades));
@@ -432,6 +466,7 @@ function normalize(d) {
     if (!Array.isArray(u.testLinks)) u.testLinks = (u.id === 'up-feb26') ? JSON.parse(JSON.stringify(STARTER.upgrades[0].testLinks)) : [];
     if (!Array.isArray(u.cmInstructions)) u.cmInstructions = (u.id === 'up-feb26') ? JSON.parse(JSON.stringify(STARTER.upgrades[0].cmInstructions)) : [];
     if (u.versionSkewTicket == null) u.versionSkewTicket = '';
+    if (u.done == null) u.done = false;
   });
   { const smokeUrl = "https://umassmemorial.sharepoint.com/sites/IS-Applications/SU%20Smoke%20Testing%20Scripts/Forms/AllItems.aspx";
     const r = d.testingResources; const su = r.findIndex(x => /SU Smoke Testing/i.test(x.label||''));
@@ -458,6 +493,61 @@ async function init() {
 function save() { dirty = true; try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); } catch (e) {} }
 function uid() { return 'id' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function A() { return data.upgrades.find(u => u.id === data.activeId) || data.upgrades[0] || null; }
+
+/* ---- paste parsers ---- */
+function parseDateToken(tok, refYear) {
+  const m = String(tok).match(/(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?/);
+  if (!m) return '';
+  let mo = +m[1], da = +m[2], yr = m[3] ? +m[3] : refYear;
+  if (yr < 100) yr += 2000;
+  return `${yr}-${String(mo).padStart(2,'0')}-${String(da).padStart(2,'0')}`;
+}
+function isTestingWeek(label) { return /^(application|integrated)\b/i.test((label||'').trim()); }
+function mkMs(date, label, link) {
+  const ms = { date, label: (label||'').trim(), link: link || '' };
+  if (isTestingWeek(ms.label)) { const d = new Date(date+'T00:00:00'); if (!isNaN(d)) { d.setDate(d.getDate()+4); ms.end = d.toISOString().slice(0,10); } }
+  return ms;
+}
+function parseMilestones(text, refYear) {
+  const out = [];
+  (text||'').split(/\r?\n/).forEach(raw => {
+    let line = raw.replace(/^[\s*\-•]+/, '').trim();
+    if (!line) return;
+    const dm = line.match(/^(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?)/);
+    if (!dm) return;
+    const date = parseDateToken(dm[1], refYear);
+    let rest = line.slice(dm[1].length).replace(/^[\s\-–:]+/, '').trim();
+    const links = []; const linkRe = /\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g; let mm;
+    while ((mm = linkRe.exec(rest)) !== null) links.push({ text: mm[1].trim(), url: mm[2] });
+    const label = rest.replace(linkRe, '$1').replace(/\s+/g,' ').trim();
+    if (links.length >= 2) links.forEach(l => out.push(mkMs(date, l.text, l.url)));
+    else out.push(mkMs(date, label, links[0] ? links[0].url : ''));
+  });
+  return out;
+}
+function parseNovaText(text) {
+  const out = []; let owner = '';
+  (text||'').split(/\r?\n/).forEach(raw => {
+    const line = raw.replace(/^[\s*\-•]+/, '').trim();
+    if (!line) return;
+    const nm = line.match(/^(\d{4,7})\s*[-–:]?\s*(.+)$/);
+    if (nm) { out.push({ number: nm[1], title: nm[2].trim(), owner, link: NOVA_URL(nm[1]) }); return; }
+    if (/^from\b/i.test(line)) return;
+    if (line.split(/\s+/).length <= 4 && !/\d{4,}/.test(line)) owner = line.replace(/[:•]+$/,'').trim();
+  });
+  return out;
+}
+function syncTestLinksFromMilestones(u) {
+  if (!u) return;
+  u.testLinks = u.testLinks || [];
+  const seen = new Set(u.testLinks.map(l => l.url));
+  (u.milestones||[]).forEach(m => {
+    if (m.link && /application|integrated|bpam/i.test(m.label||'') && !seen.has(m.link)) {
+      u.testLinks.push({ label: (m.label||'').replace(/\s*\/\s*EUAT$/i,'').trim() || 'Testing', url: m.link });
+      seen.add(m.link);
+    }
+  });
+}
 
 const UP_COUNT = 8;
 const HUE_ORDER = [3, 4, 2, 1, 5, 6, 7, 8];
@@ -500,17 +590,22 @@ function renderSwitcher() {
   const chipEl = document.getElementById('yearChips');
   const el = document.getElementById('yearStrip');
   if (!ups.length) { chipEl.innerHTML = ''; el.innerHTML = `<div class="nova-empty" style="grid-column:1/-1">No upgrades yet. Click “New upgrade” to add one.</div>`; return; }
-  const years = [...new Set(ups.map(yearOf))].sort((a,b) => { if (a==='Undated') return 1; if (b==='Undated') return -1; return a-b; });
-  if (viewYear === null || !years.map(String).includes(String(viewYear))) viewYear = yearOf(A());
-  chipEl.innerHTML = years.map(y => `<button class="yr-chip ${String(y)===String(viewYear)?'on':''}" onclick="setViewYear('${y}')">${y}</button>`).join('');
-  const list = ups.filter(u => String(yearOf(u)) === String(viewYear)).slice().sort((a,b) => String(a.goLive||'').localeCompare(String(b.goLive||'')));
+  const doneCount = ups.filter(u => u.done).length;
+  const visible = ups.filter(u => !u.done || showCompleted || u.id === data.activeId);
+  const years = [...new Set(visible.map(yearOf))].sort((a,b) => { if (a==='Undated') return 1; if (b==='Undated') return -1; return a-b; });
+  if (viewYear === null || !years.map(String).includes(String(viewYear))) viewYear = years.includes(yearOf(A())) ? yearOf(A()) : years[0];
+  let chips = years.map(y => `<button class="yr-chip ${String(y)===String(viewYear)?'on':''}" onclick="setViewYear('${y}')">${y}</button>`).join('');
+  if (doneCount) chips += `<button class="yr-chip" onclick="toggleCompleted()" title="Show or hide completed upgrades">${showCompleted?'Hide completed':`Show completed (${doneCount})`}</button>`;
+  chipEl.innerHTML = chips;
+  const list = visible.filter(u => String(yearOf(u)) === String(viewYear)).slice().sort((a,b) => String(a.goLive||'').localeCompare(String(b.goLive||'')));
   el.innerHTML = list.map(u => `
-    <div class="yr ${u.current?'current':''} ${u.id===data.activeId?'active':''}" style="--up:${upVar(u)}" onclick="setActive('${u.id}')" title="View this upgrade">
-      <div class="yr-badges">${u.current?'<span class="badge-live">In process</span>':''}${u.id===data.activeId?'<span class="badge-view">Viewing</span>':''}</div>
+    <div class="yr ${u.current?'current':''} ${u.done?'done':''} ${u.id===data.activeId?'active':''}" style="--up:${upVar(u)}" onclick="setActive('${u.id}')" title="View this upgrade">
+      <div class="yr-badges">${u.current?'<span class="badge-live">In process</span>':''}${u.done?'<span class="badge-done">Done</span>':''}${u.id===data.activeId?'<span class="badge-view">Viewing</span>':''}</div>
       <div class="yr-name">${esc(u.version || '—')}</div>
       <div class="yr-date">Go-live ${fmtDate(u.goLive)}</div>
     </div>`).join('');
 }
+function toggleCompleted() { showCompleted = !showCompleted; renderSwitcher(); }
 function setViewYear(y) { viewYear = (y==='Undated') ? 'Undated' : (isNaN(+y) ? y : +y); renderSwitcher(); }
 function setActive(id) { data.activeId = id; viewYear = yearOf(A()); save(); renderAll(); }
 
@@ -692,9 +787,10 @@ function openAddUpgrade() {
     <div class="modal-head"><h3>New upgrade</h3><button class="icon ghost" onclick="closeModal()">✕</button></div>
     <div class="modal-body">
       <div class="grid2">${field('Version','a_version','','text',"e.g. May'26")}${field('Our go-live','a_golive','','date')}</div>
-      <div class="field"><label for="a_copy">Copy milestone template from</label><select id="a_copy"><option value="">— none (start blank) —</option>${opts}</select></div>
-      <label class="checkline"><input type="checkbox" id="a_current"> Mark as currently in process</label>
-      <div class="checkline muted-inline">Analysts and CM instructions carry over. Nova Notes, testing, and migrations start empty; copied milestones keep their labels with blank dates.</div>
+      <div class="field"><label for="a_copy">Or copy milestone template from</label><select id="a_copy"><option value="">— none —</option>${opts}</select></div>
+      ${textField('Paste milestones (optional)','a_ms_paste','','Paste your date/label lines, e.g.\n09/14 - PJX, REL, POC environments upgrade\n10/19 - [Application testing](url) / EUAT')}
+      <label class="checkline"><input type="checkbox" id="a_current" checked> Mark as currently in process</label>
+      <div class="checkline muted-inline">Analysts and CM instructions carry over. Pasted milestones (with dates + links) win over a copied template; testing links are pulled into this upgrade's links automatically.</div>
     </div>
     <div class="modal-foot"><span></span><div><button class="ghost" onclick="closeModal()">Cancel</button> <button class="primary" onclick="createUpgrade()">Create</button></div></div>
   `);
@@ -705,7 +801,10 @@ function createUpgrade() {
   const copyId = val('a_copy');
   let milestones = [], cmInstructions = [];
   if (copyId) { const t = data.upgrades.find(u=>u.id===copyId); if (t) { milestones = (t.milestones||[]).map(m => ({ date:'', end:'', label:m.label, link:'' })); cmInstructions = (t.cmInstructions||[]).map(c => ({ ...c })); } }
-  const up = { id: uid(), version, goLive, current:false, notes:'', milestones, nova:[], testing:[], migrations:[], testLinks:[], cmInstructions, versionSkewTicket:'' };
+  const paste = val('a_ms_paste');
+  if (paste) { const refYear = goLive ? +goLive.slice(0,4) : new Date().getFullYear(); const parsed = parseMilestones(paste, refYear); if (parsed.length) milestones = parsed; }
+  const up = { id: uid(), version, goLive, current:false, done:false, notes:'', milestones, nova:[], testing:[], migrations:[], testLinks:[], cmInstructions, versionSkewTicket:'' };
+  syncTestLinksFromMilestones(up);
   if (document.getElementById('a_current').checked) { data.upgrades.forEach(x=>x.current=false); up.current = true; }
   data.upgrades.push(up); data.activeId = up.id; viewYear = yearOf(up);
   save(); renderAll(); closeModal(); toast('Upgrade created');
@@ -718,6 +817,7 @@ function openUpgradeModal() {
     <div class="modal-body">
       <div class="grid2">${field('Version','u_version',u.version,'text',"e.g. Feb'26")}${field('Our go-live','u_golive',u.goLive,'date')}</div>
       <label class="checkline"><input type="checkbox" id="u_current" ${u.current?'checked':''}> This upgrade is currently in process</label>
+      <label class="checkline"><input type="checkbox" id="u_done" ${u.done?'checked':''}> Completed — hide it from the Upgrades bar</label>
       ${textField('Notes','u_notes',u.notes,'Any context for this upgrade')}
       <div class="checkline muted-inline">Milestone dates are edited under “Milestones — this upgrade”.</div>
     </div>
@@ -727,7 +827,9 @@ function openUpgradeModal() {
 function saveUpgrade() {
   const u = A();
   u.version = val('u_version'); u.goLive = val('u_golive'); u.notes = val('u_notes');
-  if (document.getElementById('u_current').checked) { data.upgrades.forEach(x=>x.current=false); u.current = true; } else { u.current = false; }
+  u.done = document.getElementById('u_done').checked;
+  if (u.done) u.current = false;
+  else if (document.getElementById('u_current').checked) { data.upgrades.forEach(x=>x.current=false); u.current = true; } else { u.current = false; }
   viewYear = yearOf(u);
   save(); renderAll(); closeModal(); toast('Upgrade saved');
 }
@@ -781,12 +883,24 @@ function renderMsModal() {
     <div class="modal-body">
       ${rows || '<div class="muted-inline">No milestones yet — add the first below.</div>'}
       <button class="small ghost" style="justify-self:start" onclick="addMs()">+ Add milestone</button>
-      <div class="checkline muted-inline">Add an End date for anything that spans days (e.g. a testing week); leave End blank for single-day milestones. Update the dates each cycle.</div>
+      <details style="border-top:1px solid var(--grid);padding-top:10px;">
+        <summary style="cursor:pointer;font-size:12px;font-weight:600;color:var(--accent);">Paste from a list / email</summary>
+        <textarea id="ms_paste" style="width:100%;min-height:90px;margin-top:8px;" placeholder="One per line, e.g.&#10;09/14 - PJX, REL, POC environments upgrade&#10;10/19 - [Application testing](url) / EUAT"></textarea>
+        <button class="small ghost" style="margin-top:6px;justify-self:start" onclick="msPasteParse()">Parse &amp; add</button>
+      </details>
+      <div class="checkline muted-inline">Add an End date for anything that spans days (e.g. a testing week); leave End blank for single-day milestones. Testing links are pulled into this upgrade's links on save.</div>
     </div>
     <div class="modal-foot"><span></span><div><button class="ghost" onclick="closeModal()">Cancel</button> <button class="primary" onclick="saveMilestones()">Save</button></div></div>
   `);
 }
-function saveMilestones() { collectMs(); A().milestones = msDraft.filter(m=>m.date||m.label); save(); renderAll(); closeModal(); toast('Milestones saved'); }
+function msPasteParse() {
+  collectMs();
+  const u = A(); const refYear = (u && u.goLive) ? +u.goLive.slice(0,4) : new Date().getFullYear();
+  const parsed = parseMilestones(val('ms_paste'), refYear);
+  if (!parsed.length) { toast('No milestones found in the paste'); return; }
+  msDraft = msDraft.concat(parsed); renderMsModal(); toast(`Added ${parsed.length} milestone${parsed.length===1?'':'s'}`);
+}
+function saveMilestones() { collectMs(); const u=A(); u.milestones = msDraft.filter(m=>m.date||m.label); syncTestLinksFromMilestones(u); save(); renderAll(); closeModal(); toast('Milestones saved'); }
 
 function openNovaModal(id) {
   const nova = A().nova;
@@ -818,6 +932,24 @@ function saveNova(id) {
   save(); renderAll(); closeModal(); toast('Nova Note saved');
 }
 function toggleNova(id){ const n = A().nova.find(x=>x.id===id); if(n){ n.done=!n.done; save(); renderAll(); } }
+function openNovaPasteModal() {
+  openModal(`
+    <div class="modal-head"><h3>Paste Nova Notes from email</h3><button class="icon ghost" onclick="closeModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="field"><label for="nova_paste">Paste the assignment list</label>
+      <textarea id="nova_paste" style="min-height:180px;" placeholder="Darcy&#10;918727-More Easily Identify Provider Teams on Shift&#10;904090-Place Common Verbal and Per Protocol Orders...&#10;David&#10;920956-Enhanced Sorting and Other Options..."></textarea></div>
+      <div class="checkline muted-inline">A name on its own line sets the analyst; lines that start with a Nova number become notes assigned to them. Links build automatically from the number. New analysts are added as columns.</div>
+    </div>
+    <div class="modal-foot"><span></span><div><button class="ghost" onclick="closeModal()">Cancel</button> <button class="primary" onclick="parseNovaPaste()">Add notes</button></div></div>
+  `);
+}
+function parseNovaPaste() {
+  const notes = parseNovaText(val('nova_paste'));
+  if (!notes.length) { toast('No Nova Notes found in the paste'); return; }
+  const u = A(); u.nova = u.nova || [];
+  notes.forEach(n => { u.nova.push({ id: uid(), number: n.number, title: n.title, link: n.link, owner: n.owner, done: false }); if (n.owner && !data.analysts.includes(n.owner)) data.analysts.push(n.owner); });
+  save(); renderAll(); closeModal(); toast(`Added ${notes.length} Nova Note${notes.length===1?'':'s'}`);
+}
 
 let cmDraft = [], cmSkewDraft = '';
 function openCmModal() { const u=A(); cmDraft = ((u&&u.cmInstructions)||[]).map(x=>({...x})); cmSkewDraft = (u&&u.versionSkewTicket)||''; renderCmModal(); }
