@@ -466,6 +466,10 @@ function normalize(d) {
   { const smokeUrl = "https://umassmemorial.sharepoint.com/sites/IS-Applications/SU%20Smoke%20Testing%20Scripts/Forms/AllItems.aspx";
     const r = d.testingResources; const su = r.findIndex(x => /SU Smoke Testing/i.test(x.label||''));
     if (su !== -1) { r[su] = { label: "ASAP Smoke Testing", url: smokeUrl }; for (let i=r.length-1;i>=0;i--) if (i!==su && /ASAP Smoke Testing/i.test(r[i].label||'')) r.splice(i,1); } }
+  // heal analyst/owner names that accidentally captured a "(N)" count from a pasted email
+  { const cn = s => String(s||'').replace(/\s*\(\s*\d+\s*\)\s*$/,'').trim();
+    d.analysts = [...new Set((d.analysts||[]).map(cn).filter(Boolean))];
+    d.upgrades.forEach(u => (u.nova||[]).forEach(n => { if (n.owner) n.owner = cn(n.owner); })); }
   if (!d.activeId || !d.upgrades.find(u => u.id === d.activeId)) d.activeId = (d.upgrades[0]||{}).id;
   if (d.publishedAt == null) d.publishedAt = 0;
   return d;
@@ -528,7 +532,7 @@ function parseNovaText(text) {
     const nm = line.match(/^(\d{4,7})\s*[-–:]?\s*(.+)$/);
     if (nm) { out.push({ number: nm[1], title: nm[2].trim(), owner, link: NOVA_URL(nm[1]) }); return; }
     if (/^from\b/i.test(line)) return;
-    if (line.split(/\s+/).length <= 4 && !/\d{4,}/.test(line)) owner = line.replace(/[:•]+$/,'').trim();
+    if (line.split(/\s+/).length <= 4 && !/\d{4,}/.test(line)) owner = line.replace(/\s*\(\s*\d+\s*\)\s*$/,'').replace(/[:•]+$/,'').trim();
   });
   return out;
 }
