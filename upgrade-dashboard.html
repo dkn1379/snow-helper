@@ -158,6 +158,7 @@
   .nova-item .ni-actions button { opacity: .55; }
   .nova-item:hover .ni-actions button, .nova-item .ni-actions button:hover { opacity: 1; }
   .nova-empty { padding: 16px; color: var(--muted); font-size: 12.5px; text-align: center; }
+  .ni-note { font-size: 11.5px; color: var(--muted); margin-top: 3px; line-height: 1.35; font-style: italic; }
   .ni-cm { display: inline-flex; align-items: center; gap: 4px; margin-top: 5px; font-size: 11px; font-weight: 700; letter-spacing: .02em; padding: 2px 8px; border-radius: 6px; background: var(--accent); color: #fff; }
   .nova-item.has-cm { border-left: 3px solid var(--accent); background: var(--accent-soft); }
   .nova-item.has-cm:hover { background: var(--accent-soft); }
@@ -663,7 +664,8 @@ function renderNova() {
       const label = `<span class="ni-num">${esc(n.number||'—')}</span> ${esc(n.title||'Untitled')}`;
       const main = n.link ? `<a href="${esc(n.link)}" target="_blank" rel="noopener">${label} <span class="link-icon">↗</span></a>` : label;
       const cm = n.cmTicket ? `<div class="ni-cm">CM ${esc(n.cmTicket)}</div>` : '';
-      return `<div class="nova-item ${n.done?'done':''} ${n.cmTicket?'has-cm':''}"><div class="ni-main">${main}${cm}</div><div class="ni-actions">
+      const note = n.notes ? `<div class="ni-note">${esc(n.notes)}</div>` : '';
+      return `<div class="nova-item ${n.done?'done':''} ${n.cmTicket?'has-cm':''}"><div class="ni-main">${main}${note}${cm}</div><div class="ni-actions">
         <button class="icon small ghost" title="Mark reviewed" onclick="toggleNova('${n.id}')">${n.done?'✓':'○'}</button>
         <button class="icon small ghost" title="Edit" onclick="openNovaModal('${n.id}')">✎</button>
         <button class="icon small ghost danger" title="Delete" onclick="del('nova','${n.id}')">✕</button></div></div>`;
@@ -903,6 +905,7 @@ function openNovaModal(id) {
       ${field('Title','n_title',n.title,'text','Note title')}
       ${field('Link','n_link',n.link,'text','Leave blank to auto-build from the Nova #')}
       ${field('CM Ticket # (optional)','n_cm',n.cmTicket,'text','Only if this note has a CM ticket')}
+      ${textField('Notes (optional)','n_notes',n.notes,'Anything to remember — carryover, dependencies, review comments…')}
       <div class="checkline muted-inline">Leave the link blank and it’s built as nova.epic.com/Select?CstID=${CST_ID}&RnID=[number].</div>
     </div>
     <div class="modal-foot"><span></span><div><button class="ghost" onclick="closeModal()">Cancel</button> <button class="primary" onclick="saveNova('${id||''}')">Save</button></div></div>
@@ -911,7 +914,7 @@ function openNovaModal(id) {
 function saveNova(id) {
   const number = val('n_number'); let link = val('n_link');
   if (!link && number) link = NOVA_URL(number);
-  const rec = { number, title: val('n_title'), link, owner: val('n_owner'), cmTicket: val('n_cm') };
+  const rec = { number, title: val('n_title'), link, owner: val('n_owner'), cmTicket: val('n_cm'), notes: val('n_notes') };
   const nova = A().nova;
   if (id) { Object.assign(nova.find(x=>x.id===id), rec); }
   else { rec.id = uid(); rec.done = false; nova.push(rec); }
